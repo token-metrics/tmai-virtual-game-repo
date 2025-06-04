@@ -88,9 +88,20 @@ export GAME_API_KEY="your-game-api-key"
 - `TOKENMETRICS_API_KEY`: Your TokenMetrics API key (get one from [TokenMetrics](https://tokenmetrics.com))
 - `GAME_API_KEY`: Your Virtuals Protocol GAME API key
 
-> 💡 **Need API keys?** 
-> - **TokenMetrics API**: Contact [TokenMetrics](https://tokenmetrics.com) to get started!
-> - **GAME API**: Get your key from [Virtuals Protocol](https://virtuals.io)
+> 💡 **How to Get API Keys:** 
+> 
+> **🔑 TokenMetrics API Key:**
+> 1. Visit [TokenMetrics.com](https://tokenmetrics.com)
+> 2. Sign up for an account or log in
+> 3. Navigate to API section in your dashboard
+> 4. Generate your API key (starts with `tm-`)
+> 
+> **🎮 GAME API Key:**
+> 1. Visit [Virtuals Protocol](https://virtuals.io)
+> 2. Create an account and access the developer portal
+> 3. Generate your GAME framework API key
+> 
+> **📧 Need Help?** Contact TokenMetrics support for API access assistance.
 
 ### ✅ Installation Verification
 
@@ -377,6 +388,55 @@ Need help? We've got you covered:
 - 📚 Comprehensive examples and tests
 - 🛡️ Built-in error handling and rate limiting
 - 🔷 Full TypeScript support
+
+---
+
+## 📋 Quick Reference
+
+### **🚀 Essential Commands**
+```bash
+# Installation
+npm install tokenmetrics-virtuals-plugin
+
+# Setup
+cp env.example .env
+
+# Test installation
+npm run test:setup
+
+# Interactive testing
+npm run chat
+
+# Build for production
+npm run build
+```
+
+### **⚡ Quick Integration Template**
+```typescript
+import { config } from "dotenv";
+config({ path: "./.env" });
+import TokenMetricsPlugin from "tokenmetrics-virtuals-plugin";
+import { GameAgent } from "@virtuals-protocol/game";
+
+const plugin = new TokenMetricsPlugin({
+  apiClientConfig: { apiKey: process.env.TOKENMETRICS_API_KEY! }
+});
+
+const agent = new GameAgent(process.env.GAME_API_KEY!, {
+  name: "Crypto AI Agent",
+  goal: "Provide crypto analysis",
+  workers: [plugin.getWorker({})]
+});
+
+await agent.init();
+```
+
+### **🎯 Most Used Functions**
+- `getTokens()` - Get all supported cryptocurrencies
+- `getPriceData(token_id)` - Get current prices
+- `getTradingSignals()` - Get buy/sell recommendations
+- `getTokenMetricsAi(message)` - Chat with TokenMetrics AI
+- `getMarketMetrics()` - Get market overview
 
 ---
 

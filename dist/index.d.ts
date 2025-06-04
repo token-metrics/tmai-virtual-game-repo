@@ -32,15 +32,15 @@ declare class TokenMetricsPlugin {
         readonly default: 1;
     }, {
         readonly name: "token_name";
-        readonly description: "Comma separated crypto asset names (e.g., Bitcoin, Ethereum)";
+        readonly description: "Optional: Comma separated crypto asset names (e.g., Bitcoin, Ethereum). Only use when searching for specific tokens.";
         readonly type: "string";
     }, {
         readonly name: "symbol";
-        readonly description: "Comma separated token symbols (e.g., BTC, ETH)";
+        readonly description: "Optional: Comma separated token symbols (e.g., BTC, ETH). Only use when searching for specific tokens.";
         readonly type: "string";
     }, {
         readonly name: "category";
-        readonly description: "Comma separated category names";
+        readonly description: "Optional: Comma separated category names. Only use when filtering by specific categories.";
         readonly type: "string";
     }]>;
     get getTopMarketCapTokens(): GameFunction<[{

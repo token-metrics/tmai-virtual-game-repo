@@ -74,7 +74,7 @@ import {
       return new GameFunction({
         name: "get_tokens",
         description:
-          "Get the list of coins and their associated TOKEN_ID supported by Token Metrics. Use this to find token IDs for other API calls.",
+          "Get the complete list of cryptocurrencies and their TOKEN_ID supported by TokenMetrics. To get ALL available tokens, use only 'limit' and 'page' parameters. Use search parameters (token_name, symbol, category) only when specifically searching for particular cryptocurrencies.",
         args: [
           {
             name: "limit",
@@ -90,17 +90,17 @@ import {
           },
           {
             name: "token_name",
-            description: "Comma separated crypto asset names (e.g., Bitcoin, Ethereum)",
+            description: "Optional: Comma separated crypto asset names (e.g., Bitcoin, Ethereum). Only use when searching for specific tokens.",
             type: "string",
           },
           {
             name: "symbol",
-            description: "Comma separated token symbols (e.g., BTC, ETH)",
+            description: "Optional: Comma separated token symbols (e.g., BTC, ETH). Only use when searching for specific tokens.",
             type: "string",
           },
           {
             name: "category",
-            description: "Comma separated category names",
+            description: "Optional: Comma separated category names. Only use when filtering by specific categories.",
             type: "string",
           },
         ] as const,
