@@ -173,9 +173,12 @@ import {
     
     logger(formattedMessage);
   
+    // Include raw JSON data for programmatic access (used by chat interface)
+    const responseWithData = formattedMessage + `\n\nResponse: ${JSON.stringify(jsonResponse)}`;
+  
     return new ExecutableGameFunctionResponse(
       ExecutableGameFunctionStatus.Done,
-      formattedMessage
+      responseWithData
     );
   }
 

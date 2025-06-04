@@ -145,7 +145,9 @@ async function tokenMetricsApiCall(apiKey, baseApiUrl, endpoint, args, logger) {
         }
     }
     logger(formattedMessage);
-    return new game_1.ExecutableGameFunctionResponse(game_1.ExecutableGameFunctionStatus.Done, formattedMessage);
+    // Include raw JSON data for programmatic access (used by chat interface)
+    const responseWithData = formattedMessage + `\n\nResponse: ${JSON.stringify(jsonResponse)}`;
+    return new game_1.ExecutableGameFunctionResponse(game_1.ExecutableGameFunctionStatus.Done, responseWithData);
 }
 async function tokenMetricsApiPostCall(apiKey, baseApiUrl, endpoint, body, logger) {
     // Prepare headers for the POST request
