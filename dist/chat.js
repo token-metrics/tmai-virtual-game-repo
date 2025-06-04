@@ -68,6 +68,7 @@ class TokenMetricsChatInterface {
         this.rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
+            prompt: `${colors.cyan}${colors.bright}💬 Your prompt: ${colors.reset}`,
         });
     }
     async rateLimitDelay() {
@@ -146,38 +147,41 @@ class TokenMetricsChatInterface {
             // Determine the best endpoint(s) to use based on the prompt
             // Order matters - more specific matches first!
             // 1. TOKEN LIST - /tokens endpoint (more specific matching)
-            if ((lowerPrompt.includes('token') && (lowerPrompt.includes('list') || lowerPrompt.includes('id'))) ||
+            if ((lowerPrompt.includes('token') && (lowerPrompt.includes('list') || lowerPrompt.includes('id') || lowerPrompt.includes('database') || lowerPrompt.includes('show'))) ||
                 (lowerPrompt.includes('supported') && lowerPrompt.includes('cryptocurrencies')) ||
-                (lowerPrompt.includes('all') && lowerPrompt.includes('cryptocurrencies'))) {
+                (lowerPrompt.includes('all') && lowerPrompt.includes('cryptocurrencies')) ||
+                (lowerPrompt.includes('tokens') && (lowerPrompt.includes('database') || lowerPrompt.includes('available') || lowerPrompt.includes('show'))) ||
+                lowerPrompt.includes('token database') ||
+                lowerPrompt.includes('tokens database')) {
                 console.log(`${colors.yellow}🔍 Getting supported tokens list...${colors.reset}`);
                 await this.getTokensList();
-                // 2. TOP MARKET CAP - /top-market-cap endpoint  
+                // 2. TRADER GRADES - /trader-grades endpoint (more specific matching - moved up)
             }
-            else if ((lowerPrompt.includes('top') && (lowerPrompt.includes('market') || lowerPrompt.includes('cap') || lowerPrompt.includes('crypto'))) ||
-                (lowerPrompt.includes('market') && lowerPrompt.includes('cap')) ||
+            else if ((lowerPrompt.includes('trader') && (lowerPrompt.includes('grade') || lowerPrompt.includes('score') || lowerPrompt.includes('rating'))) ||
+                (lowerPrompt.includes('trading') && lowerPrompt.includes('score'))) {
+                console.log(`${colors.yellow}🔍 Getting trader grades...${colors.reset}`);
+                await this.getTraderGrades();
+                // 3. INVESTOR GRADES - /investor-grades endpoint (more specific matching - moved up)
+            }
+            else if ((lowerPrompt.includes('investor') && (lowerPrompt.includes('grade') || lowerPrompt.includes('score') || lowerPrompt.includes('rating'))) ||
+                (lowerPrompt.includes('investment') && lowerPrompt.includes('rating'))) {
+                console.log(`${colors.yellow}🔍 Getting investor grades...${colors.reset}`);
+                await this.getInvestorGrades();
+                // 4. TOP MARKET CAP - /top-market-cap endpoint (moved down to avoid conflicts)
+            }
+            else if ((lowerPrompt.includes('top') && (lowerPrompt.includes('market') || lowerPrompt.includes('cap') || lowerPrompt.includes('crypto')) && !lowerPrompt.includes('grade') && !lowerPrompt.includes('score') && !lowerPrompt.includes('rating')) ||
+                (lowerPrompt.includes('market') && lowerPrompt.includes('cap') && !lowerPrompt.includes('grade')) ||
                 (lowerPrompt.includes('biggest') && lowerPrompt.includes('crypto')) ||
                 lowerPrompt.includes('market leaders')) {
                 console.log(`${colors.yellow}🔍 Getting top market cap tokens...${colors.reset}`);
                 await this.getTopMarketCapTokens();
-                // 3. PRICE DATA - /price-data endpoint
+                // 5. PRICE DATA - /price-data endpoint
             }
             else if ((lowerPrompt.includes('price') && !lowerPrompt.includes('prediction') && !lowerPrompt.includes('forecast') && !lowerPrompt.includes('scenario')) ||
                 lowerPrompt.includes('current price') ||
                 (lowerPrompt.includes('get') && lowerPrompt.includes('price'))) {
                 console.log(`${colors.yellow}🔍 Getting current price data...${colors.reset}`);
                 await this.getPriceData(prompt);
-                // 4. TRADER GRADES - /trader-grades endpoint (more specific matching)
-            }
-            else if ((lowerPrompt.includes('trader') && (lowerPrompt.includes('grade') || lowerPrompt.includes('score') || lowerPrompt.includes('rating'))) ||
-                (lowerPrompt.includes('trading') && lowerPrompt.includes('score'))) {
-                console.log(`${colors.yellow}🔍 Getting trader grades...${colors.reset}`);
-                await this.getTraderGrades();
-                // 5. INVESTOR GRADES - /investor-grades endpoint (more specific matching)
-            }
-            else if ((lowerPrompt.includes('investor') && (lowerPrompt.includes('grade') || lowerPrompt.includes('score') || lowerPrompt.includes('rating'))) ||
-                (lowerPrompt.includes('investment') && lowerPrompt.includes('rating'))) {
-                console.log(`${colors.yellow}🔍 Getting investor grades...${colors.reset}`);
-                await this.getInvestorGrades();
                 // 6. TRADING SIGNALS - /trading-signals endpoint
             }
             else if (lowerPrompt.includes('signal') ||
@@ -2245,7 +2249,25 @@ class TokenMetricsChatInterface {
                 return await this.plugin.getResistanceSupport.executable({ token_id: primaryTokenId, limit: "50", page: "1" }, (msg) => console.log(`${colors.dim}  📝 ${msg}${colors.reset}`));
             });
             if (result.status === 'done') {
-                // Don't show generic message since we've already formatted the data
+                // Parse the resistance/support data from the response
+                try {
+                    const responseMatch = result.feedback.match(/Response: ({.*})/);
+                    if (responseMatch) {
+                        const responseData = JSON.parse(responseMatch[1]);
+                        if (responseData.success && responseData.data && responseData.data.length > 0) {
+                            this.formatResistanceSupportResponse(responseData.data);
+                        }
+                        else {
+                            this.formatResponse("No resistance/support data available for this token.", 'data');
+                        }
+                    }
+                    else {
+                        this.formatResponse("Resistance/support analysis completed successfully. Check the detailed data above for historical levels and trading insights.", 'data');
+                    }
+                }
+                catch (parseError) {
+                    this.formatResponse("Resistance/support analysis completed successfully. Check the detailed data above for historical levels and trading insights.", 'data');
+                }
             }
             else {
                 this.formatResponse(result.feedback, 'error');
@@ -2549,40 +2571,52 @@ class TokenMetricsChatInterface {
     }
     async start() {
         this.formatHeader();
-        const askQuestion = () => {
-            this.rl.question(`${colors.cyan}${colors.bright}💬 Your prompt: ${colors.reset}`, async (input) => {
-                const trimmedInput = input.trim();
-                if (!trimmedInput) {
-                    askQuestion();
-                    return;
-                }
-                const lowerInput = trimmedInput.toLowerCase();
-                if (lowerInput === 'quit' || lowerInput === 'exit') {
-                    console.log(`${colors.green}${colors.bright}👋 Thanks for using TokenMetrics AI Chat! Happy trading! 🚀${colors.reset}`);
-                    this.rl.close();
-                    return;
-                }
-                if (lowerInput === 'help') {
-                    this.showHelp();
-                    askQuestion();
-                    return;
-                }
-                if (lowerInput === 'test') {
-                    await this.testTokenDetection();
-                    askQuestion();
-                    return;
-                }
-                if (lowerInput === 'clear') {
-                    this.formatHeader();
-                    askQuestion();
-                    return;
-                }
-                console.log();
+        // Set up event handlers for the readline interface
+        this.rl.on('line', async (input) => {
+            const trimmedInput = input.trim();
+            if (!trimmedInput) {
+                this.promptUser();
+                return;
+            }
+            const lowerInput = trimmedInput.toLowerCase();
+            if (lowerInput === 'quit' || lowerInput === 'exit') {
+                console.log(`${colors.green}${colors.bright}👋 Thanks for using TokenMetrics AI Chat! Happy trading! 🚀${colors.reset}`);
+                this.rl.close();
+                return;
+            }
+            if (lowerInput === 'help') {
+                this.showHelp();
+                this.promptUser();
+                return;
+            }
+            if (lowerInput === 'test') {
+                await this.testTokenDetection();
+                this.promptUser();
+                return;
+            }
+            if (lowerInput === 'clear') {
+                this.formatHeader();
+                this.promptUser();
+                return;
+            }
+            console.log();
+            try {
                 await this.analyzePrompt(trimmedInput);
-                askQuestion();
-            });
-        };
-        askQuestion();
+            }
+            catch (error) {
+                console.log(`${colors.red}❌ Error processing request: ${error}${colors.reset}`);
+            }
+            this.promptUser();
+        });
+        this.rl.on('close', () => {
+            // Interface closed, exit gracefully
+            process.exit(0);
+        });
+        // Start the first prompt
+        this.promptUser();
+    }
+    promptUser() {
+        this.rl.prompt();
     }
     formatLargeNumber(num) {
         const number = parseFloat(num);
