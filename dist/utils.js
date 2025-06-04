@@ -4,6 +4,96 @@ exports.tokenMetricsApiCall = tokenMetricsApiCall;
 exports.tokenMetricsApiPostCall = tokenMetricsApiPostCall;
 exports.exceptionHandler = exceptionHandler;
 const game_1 = require("@virtuals-protocol/game");
+// Color coding for beautiful console output
+const colors = {
+    green: '\x1b[32m',
+    red: '\x1b[31m',
+    yellow: '\x1b[33m',
+    blue: '\x1b[34m',
+    magenta: '\x1b[35m',
+    cyan: '\x1b[36m',
+    white: '\x1b[37m',
+    reset: '\x1b[0m',
+    bright: '\x1b[1m',
+    dim: '\x1b[2m'
+};
+// Format large numbers with commas
+function formatNumber(num) {
+    if (num === null || num === undefined)
+        return 'N/A';
+    const number = parseFloat(num);
+    if (isNaN(number))
+        return 'N/A';
+    return number.toLocaleString();
+}
+// Format price with appropriate decimal places
+function formatPrice(price) {
+    if (price === null || price === undefined)
+        return 'N/A';
+    const num = parseFloat(price);
+    if (isNaN(num))
+        return 'N/A';
+    if (num >= 1) {
+        return `$${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    else if (num >= 0.01) {
+        return `$${num.toFixed(4)}`;
+    }
+    else {
+        return `$${num.toFixed(8)}`;
+    }
+}
+// Format tokens response for better readability
+function formatTokensResponse(tokens) {
+    if (!tokens || tokens.length === 0) {
+        return `${colors.yellow}No tokens found.${colors.reset}`;
+    }
+    let output = `${colors.cyan}${colors.bright}🪙 TokenMetrics Supported Cryptocurrencies${colors.reset}\n`;
+    output += `${colors.cyan}${'═'.repeat(60)}${colors.reset}\n\n`;
+    output += `${colors.green}Found ${tokens.length} cryptocurrencies:${colors.reset}\n\n`;
+    // Table header
+    output += `${colors.bright}${'ID'.padEnd(8)} ${'Symbol'.padEnd(12)} ${'Name'.padEnd(25)} ${'Category'.padEnd(15)}${colors.reset}\n`;
+    output += `${colors.dim}${'─'.repeat(8)} ${'─'.repeat(12)} ${'─'.repeat(25)} ${'─'.repeat(15)}${colors.reset}\n`;
+    // Show first 20 tokens with better formatting
+    const displayTokens = tokens.slice(0, 20);
+    displayTokens.forEach(token => {
+        const id = (token.TOKEN_ID || token.id || 'N/A').toString().padEnd(8);
+        const symbol = (token.TOKEN_SYMBOL || token.symbol || 'N/A').padEnd(12);
+        const name = (token.TOKEN_NAME || token.name || 'N/A').substring(0, 24).padEnd(25);
+        const category = (token.CATEGORY || token.category || 'N/A').substring(0, 14).padEnd(15);
+        output += `${colors.white}${id} ${colors.yellow}${symbol} ${colors.green}${name} ${colors.blue}${category}${colors.reset}\n`;
+    });
+    if (tokens.length > 20) {
+        output += `\n${colors.dim}... and ${tokens.length - 20} more tokens${colors.reset}\n`;
+    }
+    output += `\n${colors.cyan}${'═'.repeat(60)}${colors.reset}\n`;
+    output += `${colors.green}✅ Total tokens available: ${formatNumber(tokens.length)}${colors.reset}\n`;
+    return output;
+}
+// Format price data response
+function formatPriceResponse(priceData) {
+    if (!priceData || priceData.length === 0) {
+        return `${colors.yellow}No price data found.${colors.reset}`;
+    }
+    let output = `${colors.cyan}${colors.bright}💰 Current Cryptocurrency Prices${colors.reset}\n`;
+    output += `${colors.cyan}${'═'.repeat(60)}${colors.reset}\n\n`;
+    // Table header
+    output += `${colors.bright}${'Symbol'.padEnd(12)} ${'Name'.padEnd(20)} ${'Price'.padEnd(15)} ${'Change 24h'.padEnd(12)}${colors.reset}\n`;
+    output += `${colors.dim}${'─'.repeat(12)} ${'─'.repeat(20)} ${'─'.repeat(15)} ${'─'.repeat(12)}${colors.reset}\n`;
+    priceData.forEach(token => {
+        const symbol = (token.TOKEN_SYMBOL || token.symbol || 'N/A').padEnd(12);
+        const name = (token.TOKEN_NAME || token.name || 'N/A').substring(0, 19).padEnd(20);
+        const price = formatPrice(token.CURRENT_PRICE || token.PRICE || token.price).padEnd(15);
+        const change = token.change_24h ?
+            (token.change_24h >= 0 ?
+                `${colors.green}+${token.change_24h.toFixed(2)}%${colors.reset}` :
+                `${colors.red}${token.change_24h.toFixed(2)}%${colors.reset}`).padEnd(20) : 'N/A'.padEnd(12);
+        output += `${colors.yellow}${symbol} ${colors.green}${name} ${colors.white}${price} ${change}\n`;
+    });
+    output += `\n${colors.cyan}${'═'.repeat(60)}${colors.reset}\n`;
+    return output;
+}
+// Enhanced API call function with better formatting
 async function tokenMetricsApiCall(apiKey, baseApiUrl, endpoint, args, logger) {
     // Prepare headers for the request
     const headers = {
@@ -19,7 +109,10 @@ async function tokenMetricsApiCall(apiKey, baseApiUrl, endpoint, args, logger) {
     });
     // Prepare request URL
     const url = `${baseApiUrl}${endpoint}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
-    logger(`Making API request to: ${url}`);
+    logger(`${colors.blue}🔍 Making API request to: ${endpoint}${colors.reset}`);
+    logger(`${colors.dim}📋 Full URL: ${url}${colors.reset}`);
+    logger(`${colors.dim}📋 Parameters: ${JSON.stringify(args)}${colors.reset}`);
+    logger(`${colors.dim}📋 Query string: ${queryParams.toString()}${colors.reset}`);
     // Make the API request
     const response = await fetch(url, {
         method: "GET",
@@ -29,9 +122,32 @@ async function tokenMetricsApiCall(apiKey, baseApiUrl, endpoint, args, logger) {
         throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
     }
     const jsonResponse = await response.json();
-    const message = `Successfully queried TokenMetrics data. Response: ${JSON.stringify(jsonResponse)}`;
-    logger(message);
-    return new game_1.ExecutableGameFunctionResponse(game_1.ExecutableGameFunctionStatus.Done, message);
+    // Format response based on endpoint
+    let formattedMessage = '';
+    if (endpoint === '/tokens' && jsonResponse.data) {
+        formattedMessage = formatTokensResponse(jsonResponse.data);
+    }
+    else if (endpoint === '/price' && jsonResponse.data) {
+        formattedMessage = formatPriceResponse(jsonResponse.data);
+    }
+    else {
+        // Default formatting for other endpoints
+        formattedMessage = `${colors.green}✅ Successfully retrieved data from ${endpoint}${colors.reset}\n\n`;
+        formattedMessage += `${colors.cyan}Response Summary:${colors.reset}\n`;
+        if (jsonResponse.data && Array.isArray(jsonResponse.data)) {
+            formattedMessage += `${colors.white}• Found ${jsonResponse.data.length} items${colors.reset}\n`;
+            if (jsonResponse.data.length > 0) {
+                formattedMessage += `${colors.white}• Sample data: ${JSON.stringify(jsonResponse.data[0], null, 2)}${colors.reset}\n`;
+            }
+        }
+        else {
+            formattedMessage += `${colors.white}${JSON.stringify(jsonResponse, null, 2)}${colors.reset}\n`;
+        }
+    }
+    logger(formattedMessage);
+    // Include raw JSON data for programmatic access (used by chat interface)
+    const responseWithData = formattedMessage + `\n\nResponse: ${JSON.stringify(jsonResponse)}`;
+    return new game_1.ExecutableGameFunctionResponse(game_1.ExecutableGameFunctionStatus.Done, responseWithData);
 }
 async function tokenMetricsApiPostCall(apiKey, baseApiUrl, endpoint, body, logger) {
     // Prepare headers for the POST request
@@ -42,7 +158,7 @@ async function tokenMetricsApiPostCall(apiKey, baseApiUrl, endpoint, body, logge
     };
     // Prepare request URL
     const url = `${baseApiUrl}${endpoint}`;
-    logger(`Making POST API request to: ${url}`);
+    logger(`${colors.blue}🔍 Making POST API request to: ${endpoint}${colors.reset}`);
     logger(`Request body: ${JSON.stringify(body)}`);
     // Make the API request
     const response = await fetch(url, {
@@ -54,12 +170,12 @@ async function tokenMetricsApiPostCall(apiKey, baseApiUrl, endpoint, body, logge
         throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
     }
     const jsonResponse = await response.json();
-    const message = `Successfully queried TokenMetrics AI. Response: ${JSON.stringify(jsonResponse)}`;
-    logger(message);
-    return new game_1.ExecutableGameFunctionResponse(game_1.ExecutableGameFunctionStatus.Done, message);
+    const formattedMessage = `${colors.green}✅ Successfully queried TokenMetrics AI${colors.reset}\n\n${colors.cyan}AI Response:${colors.reset}\n${colors.white}${JSON.stringify(jsonResponse, null, 2)}${colors.reset}`;
+    logger(formattedMessage);
+    return new game_1.ExecutableGameFunctionResponse(game_1.ExecutableGameFunctionStatus.Done, formattedMessage);
 }
 function exceptionHandler(e, logger) {
-    const errorMessage = `An error occurred while querying TokenMetrics data: ${e.message || "Unknown error"}`;
+    const errorMessage = `${colors.red}❌ An error occurred while querying TokenMetrics data:${colors.reset}\n${colors.yellow}${e.message || "Unknown error"}${colors.reset}`;
     logger(errorMessage);
     return new game_1.ExecutableGameFunctionResponse(game_1.ExecutableGameFunctionStatus.Failed, errorMessage);
 }

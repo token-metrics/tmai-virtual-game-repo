@@ -4,6 +4,12 @@
   "description": "Complete TokenMetrics integration plugin for Virtuals Protocol",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "env.example"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/examples/example.fullAgent.js",
@@ -38,7 +44,20 @@
     "example:correlation": "ts-node src/examples/example.correlation.ts",
     "example:full-agent": "ts-node src/examples/example.fullAgent.ts"
   },
-  "keywords": ["tokenmetrics", "virtuals-protocol", "crypto", "ai", "trading"],
+  "keywords": ["tokenmetrics", "virtuals-protocol", "crypto", "ai", "trading", "blockchain", "defi", "game-framework"],
+  "author": "TokenMetrics",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tokenmetrics/tokenmetrics-virtuals-plugin.git"
+  },
+  "homepage": "https://github.com/tokenmetrics/tokenmetrics-virtuals-plugin#readme",
+  "bugs": {
+    "url": "https://github.com/tokenmetrics/tokenmetrics-virtuals-plugin/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "dependencies": {
     "@virtuals-protocol/game": "latest",
     "dotenv": "^16.0.3"

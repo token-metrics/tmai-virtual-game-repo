@@ -68,6 +68,7 @@ class TokenMetricsChatInterface {
         this.rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
+            prompt: `${colors.cyan}${colors.bright}💬 Your prompt: ${colors.reset}`,
         });
     }
     async rateLimitDelay() {
@@ -146,38 +147,41 @@ class TokenMetricsChatInterface {
             // Determine the best endpoint(s) to use based on the prompt
             // Order matters - more specific matches first!
             // 1. TOKEN LIST - /tokens endpoint (more specific matching)
-            if ((lowerPrompt.includes('token') && (lowerPrompt.includes('list') || lowerPrompt.includes('id'))) ||
+            if ((lowerPrompt.includes('token') && (lowerPrompt.includes('list') || lowerPrompt.includes('id') || lowerPrompt.includes('database') || lowerPrompt.includes('show'))) ||
                 (lowerPrompt.includes('supported') && lowerPrompt.includes('cryptocurrencies')) ||
-                (lowerPrompt.includes('all') && lowerPrompt.includes('cryptocurrencies'))) {
+                (lowerPrompt.includes('all') && lowerPrompt.includes('cryptocurrencies')) ||
+                (lowerPrompt.includes('tokens') && (lowerPrompt.includes('database') || lowerPrompt.includes('available') || lowerPrompt.includes('show'))) ||
+                lowerPrompt.includes('token database') ||
+                lowerPrompt.includes('tokens database')) {
                 console.log(`${colors.yellow}🔍 Getting supported tokens list...${colors.reset}`);
                 await this.getTokensList();
-                // 2. TOP MARKET CAP - /top-market-cap endpoint  
+                // 2. TRADER GRADES - /trader-grades endpoint (more specific matching - moved up)
             }
-            else if ((lowerPrompt.includes('top') && (lowerPrompt.includes('market') || lowerPrompt.includes('cap') || lowerPrompt.includes('crypto'))) ||
-                (lowerPrompt.includes('market') && lowerPrompt.includes('cap')) ||
+            else if ((lowerPrompt.includes('trader') && (lowerPrompt.includes('grade') || lowerPrompt.includes('score') || lowerPrompt.includes('rating'))) ||
+                (lowerPrompt.includes('trading') && lowerPrompt.includes('score'))) {
+                console.log(`${colors.yellow}🔍 Getting trader grades...${colors.reset}`);
+                await this.getTraderGrades();
+                // 3. INVESTOR GRADES - /investor-grades endpoint (more specific matching - moved up)
+            }
+            else if ((lowerPrompt.includes('investor') && (lowerPrompt.includes('grade') || lowerPrompt.includes('score') || lowerPrompt.includes('rating'))) ||
+                (lowerPrompt.includes('investment') && lowerPrompt.includes('rating'))) {
+                console.log(`${colors.yellow}🔍 Getting investor grades...${colors.reset}`);
+                await this.getInvestorGrades();
+                // 4. TOP MARKET CAP - /top-market-cap endpoint (moved down to avoid conflicts)
+            }
+            else if ((lowerPrompt.includes('top') && (lowerPrompt.includes('market') || lowerPrompt.includes('cap') || lowerPrompt.includes('crypto')) && !lowerPrompt.includes('grade') && !lowerPrompt.includes('score') && !lowerPrompt.includes('rating')) ||
+                (lowerPrompt.includes('market') && lowerPrompt.includes('cap') && !lowerPrompt.includes('grade')) ||
                 (lowerPrompt.includes('biggest') && lowerPrompt.includes('crypto')) ||
                 lowerPrompt.includes('market leaders')) {
                 console.log(`${colors.yellow}🔍 Getting top market cap tokens...${colors.reset}`);
                 await this.getTopMarketCapTokens();
-                // 3. PRICE DATA - /price-data endpoint
+                // 5. PRICE DATA - /price-data endpoint
             }
             else if ((lowerPrompt.includes('price') && !lowerPrompt.includes('prediction') && !lowerPrompt.includes('forecast') && !lowerPrompt.includes('scenario')) ||
                 lowerPrompt.includes('current price') ||
                 (lowerPrompt.includes('get') && lowerPrompt.includes('price'))) {
                 console.log(`${colors.yellow}🔍 Getting current price data...${colors.reset}`);
                 await this.getPriceData(prompt);
-                // 4. TRADER GRADES - /trader-grades endpoint (more specific matching)
-            }
-            else if ((lowerPrompt.includes('trader') && (lowerPrompt.includes('grade') || lowerPrompt.includes('score') || lowerPrompt.includes('rating'))) ||
-                (lowerPrompt.includes('trading') && lowerPrompt.includes('score'))) {
-                console.log(`${colors.yellow}🔍 Getting trader grades...${colors.reset}`);
-                await this.getTraderGrades();
-                // 5. INVESTOR GRADES - /investor-grades endpoint (more specific matching)
-            }
-            else if ((lowerPrompt.includes('investor') && (lowerPrompt.includes('grade') || lowerPrompt.includes('score') || lowerPrompt.includes('rating'))) ||
-                (lowerPrompt.includes('investment') && lowerPrompt.includes('rating'))) {
-                console.log(`${colors.yellow}🔍 Getting investor grades...${colors.reset}`);
-                await this.getInvestorGrades();
                 // 6. TRADING SIGNALS - /trading-signals endpoint
             }
             else if (lowerPrompt.includes('signal') ||
@@ -2245,7 +2249,25 @@ class TokenMetricsChatInterface {
                 return await this.plugin.getResistanceSupport.executable({ token_id: primaryTokenId, limit: "50", page: "1" }, (msg) => console.log(`${colors.dim}  📝 ${msg}${colors.reset}`));
             });
             if (result.status === 'done') {
-                // Don't show generic message since we've already formatted the data
+                // Parse the resistance/support data from the response
+                try {
+                    const responseMatch = result.feedback.match(/Response: ({.*})/);
+                    if (responseMatch) {
+                        const responseData = JSON.parse(responseMatch[1]);
+                        if (responseData.success && responseData.data && responseData.data.length > 0) {
+                            this.formatResistanceSupportResponse(responseData.data);
+                        }
+                        else {
+                            this.formatResponse("No resistance/support data available for this token.", 'data');
+                        }
+                    }
+                    else {
+                        this.formatResponse("Resistance/support analysis completed successfully. Check the detailed data above for historical levels and trading insights.", 'data');
+                    }
+                }
+                catch (parseError) {
+                    this.formatResponse("Resistance/support analysis completed successfully. Check the detailed data above for historical levels and trading insights.", 'data');
+                }
             }
             else {
                 this.formatResponse(result.feedback, 'error');
@@ -2549,40 +2571,52 @@ class TokenMetricsChatInterface {
     }
     async start() {
         this.formatHeader();
-        const askQuestion = () => {
-            this.rl.question(`${colors.cyan}${colors.bright}💬 Your prompt: ${colors.reset}`, async (input) => {
-                const trimmedInput = input.trim();
-                if (!trimmedInput) {
-                    askQuestion();
-                    return;
-                }
-                const lowerInput = trimmedInput.toLowerCase();
-                if (lowerInput === 'quit' || lowerInput === 'exit') {
-                    console.log(`${colors.green}${colors.bright}👋 Thanks for using TokenMetrics AI Chat! Happy trading! 🚀${colors.reset}`);
-                    this.rl.close();
-                    return;
-                }
-                if (lowerInput === 'help') {
-                    this.showHelp();
-                    askQuestion();
-                    return;
-                }
-                if (lowerInput === 'test') {
-                    await this.testTokenDetection();
-                    askQuestion();
-                    return;
-                }
-                if (lowerInput === 'clear') {
-                    this.formatHeader();
-                    askQuestion();
-                    return;
-                }
-                console.log();
+        // Set up event handlers for the readline interface
+        this.rl.on('line', async (input) => {
+            const trimmedInput = input.trim();
+            if (!trimmedInput) {
+                this.promptUser();
+                return;
+            }
+            const lowerInput = trimmedInput.toLowerCase();
+            if (lowerInput === 'quit' || lowerInput === 'exit') {
+                console.log(`${colors.green}${colors.bright}👋 Thanks for using TokenMetrics AI Chat! Happy trading! 🚀${colors.reset}`);
+                this.rl.close();
+                return;
+            }
+            if (lowerInput === 'help') {
+                this.showHelp();
+                this.promptUser();
+                return;
+            }
+            if (lowerInput === 'test') {
+                await this.testTokenDetection();
+                this.promptUser();
+                return;
+            }
+            if (lowerInput === 'clear') {
+                this.formatHeader();
+                this.promptUser();
+                return;
+            }
+            console.log();
+            try {
                 await this.analyzePrompt(trimmedInput);
-                askQuestion();
-            });
-        };
-        askQuestion();
+            }
+            catch (error) {
+                console.log(`${colors.red}❌ Error processing request: ${error}${colors.reset}`);
+            }
+            this.promptUser();
+        });
+        this.rl.on('close', () => {
+            // Interface closed, exit gracefully
+            process.exit(0);
+        });
+        // Start the first prompt
+        this.promptUser();
+    }
+    promptUser() {
+        this.rl.prompt();
     }
     formatLargeNumber(num) {
         const number = parseFloat(num);
@@ -2841,108 +2875,81 @@ class TokenMetricsChatInterface {
             return this.tokenCache;
         }
         try {
-            console.log(`${colors.dim}  🔄 Fetching latest token mappings from API...${colors.reset}`);
+            console.log(`${colors.dim}  🔄 Fetching token mappings from TokenMetrics API...${colors.reset}`);
+            // Get a comprehensive list of tokens from the API
             const result = await this.retryWithBackoff(async () => {
-                return await this.plugin.getTokens.executable({ limit: "100", page: "1" }, // Get more tokens for better coverage
-                () => { } // Silent execution for caching
-                );
+                return await this.plugin.getTokens.executable({ limit: "500", page: "1" }, // Get more tokens for better mapping
+                (msg) => console.log(`${colors.dim}    📝 ${msg}${colors.reset}`));
             });
             if (result.status === 'done') {
-                const responseMatch = result.feedback.match(/Response: ({.*})/);
-                if (responseMatch) {
-                    const responseData = JSON.parse(responseMatch[1]);
-                    if (responseData.success && responseData.data) {
-                        // Build dynamic token mappings
-                        const mappings = {};
-                        responseData.data.forEach((token) => {
-                            const tokenId = (token.TOKEN_ID || token.token_id || '').toString();
-                            const name = (token.TOKEN_NAME || token.name || '').toLowerCase();
-                            const symbol = (token.TOKEN_SYMBOL || token.symbol || '').toLowerCase();
-                            if (tokenId && name) {
-                                mappings[name] = tokenId;
+                try {
+                    const responseMatch = result.feedback.match(/Response: ({.*})/);
+                    if (responseMatch) {
+                        const responseData = JSON.parse(responseMatch[1]);
+                        if (responseData.success && responseData.data && responseData.data.length > 0) {
+                            const mappings = {};
+                            for (const token of responseData.data) {
+                                const tokenId = token.TOKEN_ID || token.id;
+                                const tokenName = token.TOKEN_NAME || token.name;
+                                const tokenSymbol = token.TOKEN_SYMBOL || token.symbol;
+                                if (tokenId && tokenName) {
+                                    // Add name mapping
+                                    mappings[tokenName.toLowerCase()] = tokenId.toString();
+                                    // Add symbol mapping if available
+                                    if (tokenSymbol) {
+                                        mappings[tokenSymbol.toLowerCase()] = tokenId.toString();
+                                    }
+                                }
                             }
-                            if (tokenId && symbol) {
-                                mappings[symbol] = tokenId;
-                            }
-                        });
-                        // Cache the mappings
-                        this.tokenCache = mappings;
-                        this.tokenCacheExpiry = now + this.CACHE_DURATION;
-                        console.log(`${colors.dim}  ✅ Cached ${Object.keys(mappings).length} token mappings${colors.reset}`);
-                        // Debug: Show some sample tokens to help with troubleshooting
-                        const sampleTokens = Object.keys(mappings).slice(0, 10);
-                        console.log(`${colors.dim}  📋 Sample cached tokens: ${sampleTokens.join(', ')}${colors.reset}`);
-                        // Debug: Check if common tokens are present
-                        const commonTokens = ['bitcoin', 'btc', 'ethereum', 'eth'];
-                        const foundCommon = commonTokens.filter(token => mappings[token]);
-                        if (foundCommon.length > 0) {
-                            console.log(`${colors.dim}  ✅ Found common tokens: ${foundCommon.join(', ')}${colors.reset}`);
+                            this.tokenCache = mappings;
+                            this.tokenCacheExpiry = now + this.CACHE_DURATION;
+                            console.log(`${colors.green}  ✅ Loaded ${Object.keys(mappings).length} token mappings${colors.reset}`);
+                            return mappings;
                         }
-                        else {
-                            console.log(`${colors.dim}  ⚠️  Common tokens (bitcoin, btc, ethereum, eth) not found in cache${colors.reset}`);
-                        }
-                        return mappings;
                     }
+                }
+                catch (parseError) {
+                    console.log(`${colors.yellow}  ⚠️  Could not parse token mappings response${colors.reset}`);
                 }
             }
         }
         catch (error) {
-            console.log(`${colors.dim}  ⚠️  Failed to fetch token mappings: ${error}${colors.reset}`);
+            console.log(`${colors.yellow}  ⚠️  Failed to fetch token mappings: ${error}${colors.reset}`);
         }
-        // If API fails completely, return empty mappings and let the system handle it gracefully
-        console.log(`${colors.dim}  ⚠️  No token mappings available - API may be temporarily unavailable${colors.reset}`);
+        // Return empty object if failed
         return {};
     }
     async extractTokensFromPrompt(prompt) {
         const lowerPrompt = prompt.toLowerCase();
         const detectedTokens = [];
-        // Define major cryptocurrencies that we should search for specifically
-        const majorCryptoSearchTerms = {
-            'bitcoin': ['bitcoin', 'btc'],
-            'ethereum': ['ethereum', 'eth'],
-            'binance coin': ['binance coin', 'bnb', 'binance'],
-            'cardano': ['cardano', 'ada'],
-            'solana': ['solana', 'sol'],
-            'polkadot': ['polkadot', 'dot'],
-            'chainlink': ['chainlink', 'link'],
-            'litecoin': ['litecoin', 'ltc'],
-            'bitcoin cash': ['bitcoin cash', 'bch'],
-            'stellar': ['stellar', 'xlm'],
-            'ripple': ['ripple', 'xrp'],
-            'dogecoin': ['dogecoin', 'doge'],
-            'polygon': ['polygon', 'matic'],
-            'avalanche': ['avalanche', 'avax'],
-            'uniswap': ['uniswap', 'uni']
-        };
-        // Check if user is asking for major cryptocurrencies
-        const requestedMajorCryptos = [];
-        for (const [cryptoName, aliases] of Object.entries(majorCryptoSearchTerms)) {
-            for (const alias of aliases) {
-                // Use word boundary matching to avoid false positives
-                const regex = new RegExp(`\\b${alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-                if (regex.test(lowerPrompt)) {
-                    requestedMajorCryptos.push(cryptoName);
-                    break;
-                }
-            }
-        }
-        // If major cryptocurrencies are requested, search for them specifically
-        if (requestedMajorCryptos.length > 0) {
-            console.log(`${colors.dim}  🔍 Searching for major cryptocurrencies: ${requestedMajorCryptos.join(', ')}${colors.reset}`);
-            for (const cryptoName of requestedMajorCryptos) {
+        console.log(`${colors.dim}  🔍 Analyzing prompt for cryptocurrency mentions: "${prompt}"${colors.reset}`);
+        // Common cryptocurrency names and symbols to search for
+        const commonCryptos = [
+            'bitcoin', 'btc', 'ethereum', 'eth', 'binance coin', 'bnb', 'cardano', 'ada',
+            'solana', 'sol', 'polkadot', 'dot', 'chainlink', 'link', 'litecoin', 'ltc',
+            'bitcoin cash', 'bch', 'stellar', 'xlm', 'ripple', 'xrp', 'dogecoin', 'doge',
+            'polygon', 'matic', 'avalanche', 'avax', 'uniswap', 'uni', 'tron', 'trx',
+            'cosmos', 'atom', 'algorand', 'algo', 'vechain', 'vet', 'filecoin', 'fil'
+        ];
+        // Check if any common cryptocurrencies are mentioned in the prompt
+        const mentionedCryptos = commonCryptos.filter(crypto => {
+            const regex = new RegExp(`\\b${crypto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+            return regex.test(lowerPrompt);
+        });
+        if (mentionedCryptos.length > 0) {
+            console.log(`${colors.dim}  🎯 Found cryptocurrency mentions: ${mentionedCryptos.join(', ')}${colors.reset}`);
+            // Use the API's native search capability for each mentioned crypto
+            for (const cryptoName of mentionedCryptos) {
                 try {
-                    console.log(`${colors.dim}  🎯 Searching for: ${cryptoName}${colors.reset}`);
+                    console.log(`${colors.dim}  🔍 Searching API for: ${cryptoName}${colors.reset}`);
                     const result = await this.retryWithBackoff(async () => {
                         return await this.plugin.getTokens.executable({
-                            limit: "10",
+                            limit: "5",
                             page: "1",
-                            token_name: cryptoName,
-                            symbol: majorCryptoSearchTerms[cryptoName][1] || "", // Use the symbol if available
-                            category: ""
+                            token_name: cryptoName // Use the API's native search
                         }, (msg) => console.log(`${colors.dim}    📝 ${msg}${colors.reset}`));
                     });
                     if (result.status === 'done') {
-                        // Parse the response to extract token data
                         try {
                             const responseMatch = result.feedback.match(/Response: ({.*})/);
                             if (responseMatch) {
@@ -2958,30 +2965,24 @@ class TokenMetricsChatInterface {
                                         }
                                     }
                                 }
-                                else {
-                                    console.log(`${colors.yellow}    ⚠️  No data found for ${cryptoName}${colors.reset}`);
-                                }
                             }
                         }
                         catch (parseError) {
                             console.log(`${colors.yellow}    ⚠️  Could not parse response for ${cryptoName}${colors.reset}`);
                         }
                     }
-                    else {
-                        console.log(`${colors.yellow}    ⚠️  Search failed for ${cryptoName}: ${result.feedback}${colors.reset}`);
-                    }
                     // Small delay between searches to avoid rate limiting
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 300));
                 }
                 catch (error) {
                     console.log(`${colors.yellow}    ⚠️  Error searching for ${cryptoName}: ${error}${colors.reset}`);
                 }
             }
         }
-        // If we found tokens through specific search, return them
+        // If we found tokens through API search, return them
         if (detectedTokens.length > 0) {
             const uniqueTokens = [...new Set(detectedTokens)];
-            console.log(`${colors.green}  ✅ Found ${uniqueTokens.length} token(s) through specific search: ${uniqueTokens.join(', ')}${colors.reset}`);
+            console.log(`${colors.green}  ✅ Found ${uniqueTokens.length} token(s): ${uniqueTokens.join(', ')}${colors.reset}`);
             return uniqueTokens;
         }
         // Check if this is a generic request that doesn't contain specific token names
@@ -2998,42 +2999,59 @@ class TokenMetricsChatInterface {
             ['the', 'and', 'or', 'for', 'of', 'in', 'on', 'at', 'to', 'from', 'with', 'by'].includes(word));
         if (isGenericRequest) {
             console.log(`${colors.dim}  💡 Generic request detected - no specific tokens mentioned.${colors.reset}`);
-            console.log(`${colors.dim}  🔍 Please specify which cryptocurrency you'd like data for.${colors.reset}`);
-            console.log(`${colors.dim}  💡 Example: "Bitcoin price data" or "Ethereum hourly data"${colors.reset}`);
-            console.log(`${colors.dim}  📋 Use 'tokens' command to see all available cryptocurrencies.${colors.reset}`);
             return [];
         }
-        // Fallback to cached token mappings for other tokens (with improved matching)
-        console.log(`${colors.dim}  📋 Searching in available token database...${colors.reset}`);
-        // Get dynamic token mappings from API
-        const tokenMappings = await this.fetchTokenMappings();
-        // If no token mappings available (API failure), inform user and return empty array
-        if (Object.keys(tokenMappings).length === 0) {
-            console.log(`${colors.yellow}⚠️  Token lookup service temporarily unavailable. Please try again in a moment.${colors.reset}`);
-            return [];
-        }
-        // Try more precise matching with token mappings for other tokens
-        for (const [tokenName, tokenId] of Object.entries(tokenMappings)) {
-            const tokenNameLower = tokenName.toLowerCase();
-            // Use word boundary matching to avoid false positives
-            // Only match if the token name appears as a complete word or phrase
-            const regex = new RegExp(`\\b${tokenNameLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-            if (regex.test(lowerPrompt)) {
-                detectedTokens.push(tokenId);
-                console.log(`${colors.dim}  🎯 Found match: ${tokenName} (ID: ${tokenId})${colors.reset}`);
+        // Fallback: try to search for any other potential token names in the prompt
+        console.log(`${colors.dim}  🔍 Trying fallback search for other potential tokens...${colors.reset}`);
+        // Extract potential token names (words that might be cryptocurrency names)
+        const words = lowerPrompt.split(/\s+/).filter(word => word.length > 2 &&
+            !genericTerms.includes(word) &&
+            !/^[0-9]+$/.test(word) &&
+            !['the', 'and', 'or', 'for', 'of', 'in', 'on', 'at', 'to', 'from', 'with', 'by'].includes(word));
+        // Try searching for each potential token name
+        for (const word of words.slice(0, 3)) { // Limit to first 3 words to avoid too many API calls
+            try {
+                const result = await this.retryWithBackoff(async () => {
+                    return await this.plugin.getTokens.executable({
+                        limit: "3",
+                        page: "1",
+                        token_name: word
+                    }, () => { } // Silent for fallback search
+                    );
+                });
+                if (result.status === 'done') {
+                    try {
+                        const responseMatch = result.feedback.match(/Response: ({.*})/);
+                        if (responseMatch) {
+                            const responseData = JSON.parse(responseMatch[1]);
+                            if (responseData.success && responseData.data && responseData.data.length > 0) {
+                                for (const token of responseData.data) {
+                                    const tokenId = token.TOKEN_ID || token.id;
+                                    if (tokenId) {
+                                        detectedTokens.push(tokenId.toString());
+                                        console.log(`${colors.green}  ✅ Fallback found: ${token.TOKEN_NAME || token.name} - ID: ${tokenId}${colors.reset}`);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (parseError) {
+                        // Silent fail for fallback search
+                    }
+                }
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            catch (error) {
+                // Silent fail for fallback search
             }
         }
-        // If still no specific tokens detected, show available options
         if (detectedTokens.length === 0) {
-            console.log(`${colors.dim}  💡 No matching tokens found in your query.${colors.reset}`);
-            console.log(`${colors.dim}  📋 Available tokens include: ${Object.keys(tokenMappings).slice(0, 10).join(', ')}...${colors.reset}`);
-            console.log(`${colors.dim}  💡 Use 'tokens' command to see all available cryptocurrencies.${colors.reset}`);
-            console.log(`${colors.dim}  🔍 Try being more specific with token names from the available list.${colors.reset}`);
+            console.log(`${colors.dim}  💡 No matching tokens found. Use 'tokens' command to see available cryptocurrencies.${colors.reset}`);
             return [];
         }
         // Remove duplicates and return
         const uniqueTokens = [...new Set(detectedTokens)];
-        console.log(`${colors.dim}  ✅ Final detected token IDs: ${uniqueTokens.join(', ')}${colors.reset}`);
+        console.log(`${colors.green}  ✅ Final detected token IDs: ${uniqueTokens.join(', ')}${colors.reset}`);
         return uniqueTokens;
     }
     async getPriceData(prompt) {
@@ -3042,7 +3060,7 @@ class TokenMetricsChatInterface {
             const tokenIds = await this.extractTokensFromPrompt(prompt);
             // Handle case when no tokens are available
             if (tokenIds.length === 0) {
-                this.formatResponse("❌ Unable to process price data request.\n\n🔍 Possible reasons:\n• The requested cryptocurrency is not available in TokenMetrics database\n• TokenMetrics specializes in alternative cryptocurrencies and DeFi tokens\n• Major cryptocurrencies like Bitcoin/Ethereum may not be included\n\n💡 Solutions:\n• Use 'tokens' command to see all available cryptocurrencies\n• Try searching for alternative tokens or DeFi projects\n• Be more specific with token names from the available list", 'error');
+                this.formatResponse("❌ Unable to process price data request.\n\n🔍 Possible reasons:\n• The requested cryptocurrency was not recognized in your query\n• Please be more specific with cryptocurrency names\n• Use exact names like 'Bitcoin', 'Ethereum', 'BTC', 'ETH', etc.\n\n💡 Solutions:\n• Try: 'Bitcoin price', 'Ethereum price', 'BTC price'\n• Use 'tokens' command to see all available cryptocurrencies\n• Be more specific with token names from the available list\n\n🎯 Supported major cryptocurrencies: Bitcoin, Ethereum, BNB, Cardano, Solana, Polkadot, Chainlink, Litecoin, and many more!", 'error');
                 return;
             }
             const tokenIdString = tokenIds.join(',');
