@@ -1,14 +1,14 @@
-# 🚀 TokenMetrics Plugin for Virtuals Game
+# 🚀 Token Metrics Plugin for Virtuals Game
 
 > 🎯 **Supercharge your G.A.M.E agents with AI-powered cryptocurrency analysis!**
 
-The TokenMetrics plugin seamlessly empowers G.A.M.E agents with comprehensive cryptocurrency analysis capabilities using the TokenMetrics API, enabling the retrieval of AI-powered market data, trading signals, and investment insights without introducing any additional complexity.
+The Token Metrics plugin seamlessly empowers G.A.M.E agents with comprehensive cryptocurrency analysis capabilities using the Token Metrics API, enabling the retrieval of AI-powered market data, trading signals, and investment insights without introducing any additional complexity.
 
 ---
 
 ## ✨ Features
 
-- 📊 **Comprehensive Token Data**: Access to 17 TokenMetrics API endpoints
+- 📊 **Comprehensive Token Data**: Access to 17 Token Metrics API endpoints
 - 🤖 **AI-Powered Analysis**: Get AI reports, sentiment analysis, and market insights
 - 📈 **Trading Intelligence**: Retrieve trader grades, investor grades, and trading signals
 - 📉 **Market Analytics**: Access quantmetrics, OHLCV data, and correlation analysis
@@ -85,13 +85,13 @@ export GAME_API_KEY="your-game-api-key"
 ```
 
 **Required Environment Variables:**
-- `TOKENMETRICS_API_KEY`: Your TokenMetrics API key (get one from [TokenMetrics](https://tokenmetrics.com))
+- `TOKENMETRICS_API_KEY`: Your Token Metrics API key (get one from [Token Metrics](https://tokenmetrics.com))
 - `GAME_API_KEY`: Your Virtuals Protocol GAME API key
 
 > 💡 **How to Get API Keys:** 
 > 
-> **🔑 TokenMetrics API Key:**
-> 1. Visit [TokenMetrics.com](https://tokenmetrics.com)
+> **🔑 Token Metrics API Key:**
+> 1. Visit [Token Metrics.com](https://tokenmetrics.com)
 > 2. Sign up for an account or log in
 > 3. Navigate to API section in your dashboard
 > 4. Generate your API key (starts with `tm-`)
@@ -101,7 +101,7 @@ export GAME_API_KEY="your-game-api-key"
 > 2. Create an account and access the developer portal
 > 3. Generate your GAME framework API key
 > 
-> **📧 Need Help?** Contact TokenMetrics support for API access assistance.
+> **📧 Need Help?** Contact Token Metrics support for API access assistance.
 
 ### ✅ Installation Verification
 
@@ -134,7 +134,7 @@ const tokenMetricsPlugin = new TokenMetricsPlugin({
 const agent = new GameAgent(process.env.GAME_API_KEY ?? "", {
   name: "🚀 Crypto Analysis Agent",
   goal: "Provide comprehensive cryptocurrency market analysis and trading insights",
-  description: "You are an AI agent specialized in cryptocurrency analysis. Use TokenMetrics API to help users make informed trading decisions! 📊",
+  description: "You are an AI agent specialized in cryptocurrency analysis. Use Token Metrics API to help users make informed trading decisions! 📊",
   workers: [tokenMetricsPlugin.getWorker({})], // Include ALL 17 functions
 });
 
@@ -178,7 +178,7 @@ interface ITokenMetricsPluginOptions {
   name?: string;         // 📛 Custom worker name  
   description?: string;  // 📝 Custom worker description
   apiClientConfig: {
-    apiKey: string;      // 🔑 TokenMetrics API key
+    apiKey: string;      // 🔑 Token Metrics API key
     baseApiUrl?: string; // 🌐 Custom API endpoint (optional)
   };
 }
@@ -260,7 +260,7 @@ npm run example:daily-ohlcv      # 📅 Get daily price data
 ### 🤖 AI & Research
 ```bash
 npm run example:ai-reports       # 📝 Get AI-generated reports
-npm run example:tokenmetrics-ai  # 🧠 Query TokenMetrics AI
+npm run example:tokenmetrics-ai  # 🧠 Query Token Metrics AI
 npm run example:sentiments       # 😊 Get sentiment analysis
 npm run example:crypto-investors # 💼 Get crypto investor data
 ```
@@ -336,7 +336,7 @@ Get AI-generated comprehensive market reports.
 - `limit` (number): Number of reports to return
 - `page` (number): Page number for pagination
 
-> 📖 **Complete Documentation**: [TokenMetrics API Documentation](https://developers.tokenmetrics.com/)
+> 📖 **Complete Documentation**: [Token Metrics API Documentation](https://developers.tokenmetrics.com/)
 
 ---
 
@@ -374,7 +374,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 Need help? We've got you covered:
 
 - 🐛 **Bug Reports**: Create an issue on GitHub
-- 🔧 **API Questions**: Contact TokenMetrics support
+- 🔧 **API Questions**: Contact Token Metrics support
 - 📚 **Documentation**: Check our comprehensive examples and tests
 - 💬 **Community**: Join our discussions
 
@@ -383,7 +383,7 @@ Need help? We've got you covered:
 ## 📈 Changelog
 
 ### 🎉 v1.0.0
-- ✨ Initial release with 17 TokenMetrics API endpoints
+- ✨ Initial release with 17 Token Metrics API endpoints
 - 💬 Interactive chat interface
 - 📚 Comprehensive examples and tests
 - 🛡️ Built-in error handling and rate limiting
@@ -435,7 +435,7 @@ await agent.init();
 - `getTokens()` - Get all supported cryptocurrencies
 - `getPriceData(token_id)` - Get current prices
 - `getTradingSignals()` - Get buy/sell recommendations
-- `getTokenMetricsAi(message)` - Chat with TokenMetrics AI
+- `getTokenMetricsAi(message)` - Chat with Token Metrics AI
 - `getMarketMetrics()` - Get market overview
 
 ---
@@ -448,6 +448,6 @@ await agent.init();
 
 ---
 
-*Made with ❤️ by the TokenMetrics team*
+*Made with ❤️ by the Token Metrics team*
 
 </div>
