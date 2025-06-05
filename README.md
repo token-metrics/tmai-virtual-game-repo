@@ -8,10 +8,11 @@ The Token Metrics plugin seamlessly empowers G.A.M.E agents with comprehensive c
 
 ## ✨ Features
 
-- 📊 **Comprehensive Token Data**: Access to 17 Token Metrics API endpoints
+- 📊 **Comprehensive Token Data**: Access to 20 Token Metrics API endpoints
 - 🤖 **AI-Powered Analysis**: Get AI reports, sentiment analysis, and market insights
 - 📈 **Trading Intelligence**: Retrieve trader grades, investor grades, and trading signals
 - 📉 **Market Analytics**: Access quantmetrics, OHLCV data, and correlation analysis
+- 📊 **Crypto Indices**: Track crypto indices, holdings, and performance data
 - ⚡ **Real-time Data**: Current prices, market metrics, and resistance/support levels
 - 💬 **Interactive Chat Interface**: Built-in chat system for testing and exploration
 - 🛡️ **Robust Error Handling**: Built-in error handling and rate limiting
@@ -56,6 +57,13 @@ The Token Metrics plugin seamlessly empowers G.A.M.E agents with comprehensive c
 | `getResistanceSupport` | Resistance and support levels | 🎯 Key Levels |
 | `getScenarioAnalysis` | Scenario-based projections | 🔮 Future Scenarios |
 | `getCorrelation` | Crypto correlation analysis | 🔗 Relationship Analysis |
+
+### 📊 Crypto Indices (NEW!)
+| Function | Description | 🎯 Purpose |
+|----------|-------------|-----------|
+| `getIndices` | Get crypto indices with performance data | 📊 Index Overview |
+| `getIndicesHoldings` | Get index portfolio composition and weights | 🏦 Portfolio Analysis |
+| `getIndicesPerformance` | Get historical index performance and ROI | 📈 Performance Tracking |
 
 ---
 
@@ -135,7 +143,7 @@ const agent = new GameAgent(process.env.GAME_API_KEY ?? "", {
   name: "🚀 Crypto Analysis Agent",
   goal: "Provide comprehensive cryptocurrency market analysis and trading insights",
   description: "You are an AI agent specialized in cryptocurrency analysis. Use Token Metrics API to help users make informed trading decisions! 📊",
-  workers: [tokenMetricsPlugin.getWorker({})], // Include ALL 17 functions
+  workers: [tokenMetricsPlugin.getWorker({})], // Include ALL 20 functions
 });
 
 // 🎯 Run your agent
@@ -163,6 +171,8 @@ const customWorker = tokenMetricsPlugin.getWorker({
     tokenMetricsPlugin.getTokens,
     tokenMetricsPlugin.getPriceData,
     tokenMetricsPlugin.getTradingSignals,
+    tokenMetricsPlugin.getIndices,
+    tokenMetricsPlugin.getIndicesHoldings,
   ],
   getEnvironment: async () => ({
     customSetting: "value",
@@ -230,6 +240,9 @@ npm run chat
 - 😊 `"Analyze market sentiment"`
 - 📝 `"Show me AI reports"`
 - 🔗 `"Get correlation analysis"`
+- 📊 `"Show me crypto indices data"` (NEW!)
+- 🏦 `"What are the holdings of crypto index 1?"` (NEW!)
+- 📈 `"Show me performance data for crypto index 1"` (NEW!)
 
 ---
 
@@ -272,6 +285,13 @@ npm run example:scenario-analysis   # 🔮 Get scenario projections
 npm run example:correlation         # 🔗 Get correlation analysis
 ```
 
+### 📊 Crypto Indices (NEW!)
+```bash
+npm run example:indices             # 📊 Get crypto indices overview
+npm run example:indices-holdings    # 🏦 Get index portfolio composition
+npm run example:indices-performance # 📈 Get historical index performance
+```
+
 ### 🧪 Testing Suite
 
 ```bash
@@ -286,6 +306,7 @@ npm run test:integration         # 🔄 Test integration scenarios
 npm run demo:trading-bot         # 🤖 Trading bot simulation
 npm run demo:research-agent      # 🔬 Research agent demo
 npm run demo:new-endpoints       # ✨ New endpoints demonstration
+npm run demo:indices             # 📊 Crypto indices demo (NEW!)
 ```
 
 ---
@@ -336,6 +357,31 @@ Get AI-generated comprehensive market reports.
 - `limit` (number): Number of reports to return
 - `page` (number): Page number for pagination
 
+### 📊 Crypto Indices Functions (NEW!)
+
+#### 📊 getIndices(args)
+Get crypto indices with performance data.
+
+**Parameters:**
+- `limit` (number): Number of indices to return (default: 50)
+- `page` (number): Page number for pagination (default: 1)
+
+#### 🏦 getIndicesHoldings(args)
+Get current holdings of a given index with weights.
+
+**Parameters:**
+- `id` (string): Index ID (required)
+- `limit` (number): Number of holdings to return (default: 50)
+- `page` (number): Page number for pagination (default: 1)
+
+#### 📈 getIndicesPerformance(args)
+Get historical performance data for an index with ROI over time.
+
+**Parameters:**
+- `id` (string): Index ID (required)
+- `limit` (number): Number of performance records to return (default: 50)
+- `page` (number): Page number for pagination (default: 1)
+
 > 📖 **Complete Documentation**: [Token Metrics API Documentation](https://developers.tokenmetrics.com/)
 
 ---
@@ -383,11 +429,12 @@ Need help? We've got you covered:
 ## 📈 Changelog
 
 ### 🎉 v1.0.0
-- ✨ Initial release with 17 Token Metrics API endpoints
+- ✨ Initial release with 20 Token Metrics API endpoints
 - 💬 Interactive chat interface
 - 📚 Comprehensive examples and tests
 - 🛡️ Built-in error handling and rate limiting
 - 🔷 Full TypeScript support
+- 📊 Crypto indices tracking with holdings and performance data
 
 ---
 
@@ -437,6 +484,8 @@ await agent.init();
 - `getTradingSignals()` - Get buy/sell recommendations
 - `getTokenMetricsAi(message)` - Chat with Token Metrics AI
 - `getMarketMetrics()` - Get market overview
+- `getIndices()` - Get crypto indices data (NEW!)
+- `getIndicesHoldings(id)` - Get index portfolio composition (NEW!)
 
 ---
 

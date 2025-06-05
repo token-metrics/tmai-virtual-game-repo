@@ -355,6 +355,49 @@ declare class TokenMetricsPlugin {
         readonly type: "number";
         readonly default: 1;
     }]>;
+    get getIndices(): GameFunction<[{
+        readonly name: "indicesType";
+        readonly description: "Filter to return indices by type: 'active' for actively managed, 'passive' for passively managed";
+        readonly type: "string";
+    }, {
+        readonly name: "limit";
+        readonly description: "Limit the number of items in response (default: 50)";
+        readonly type: "number";
+        readonly default: 50;
+    }, {
+        readonly name: "page";
+        readonly description: "Page number for pagination (default: 1)";
+        readonly type: "number";
+        readonly default: 1;
+    }]>;
+    get getIndicesHoldings(): GameFunction<[{
+        readonly name: "id";
+        readonly description: "ID of the index. Example: 1";
+        readonly type: "string";
+    }]>;
+    get getIndicesPerformance(): GameFunction<[{
+        readonly name: "id";
+        readonly description: "ID of the index. Example: 1";
+        readonly type: "string";
+    }, {
+        readonly name: "startDate";
+        readonly description: "Start Date accepts date as a string - YYYY-MM-DD format. Example: 2025-01-01";
+        readonly type: "string";
+    }, {
+        readonly name: "endDate";
+        readonly description: "End Date accepts date as a string - YYYY-MM-DD format. Example: 2025-06-01";
+        readonly type: "string";
+    }, {
+        readonly name: "limit";
+        readonly description: "Limit the number of items in response (default: 50)";
+        readonly type: "number";
+        readonly default: 50;
+    }, {
+        readonly name: "page";
+        readonly description: "Page number for pagination (default: 1)";
+        readonly type: "number";
+        readonly default: 1;
+    }]>;
 }
 export default TokenMetricsPlugin;
 //# sourceMappingURL=index.d.ts.map

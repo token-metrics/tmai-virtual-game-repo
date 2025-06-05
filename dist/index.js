@@ -39,6 +39,9 @@ class TokenMetricsPlugin {
                 this.getSentiments,
                 this.getScenarioAnalysis,
                 this.getCorrelation,
+                this.getIndices,
+                this.getIndicesHoldings,
+                this.getIndicesPerformance,
             ],
             getEnvironment: data?.getEnvironment,
         });
@@ -728,6 +731,106 @@ class TokenMetricsPlugin {
                 try {
                     logger(`Querying correlation data with parameters: ${JSON.stringify(args)}`);
                     return await (0, utils_1.tokenMetricsApiCall)(this.apiKey, this.baseApiUrl, "/correlation", args, logger);
+                }
+                catch (e) {
+                    return (0, utils_1.exceptionHandler)(e, logger);
+                }
+            },
+        });
+    }
+    get getIndices() {
+        return new game_1.GameFunction({
+            name: "get_indices",
+            description: "Get active and passive crypto indices with performance and market data. Provides comprehensive index information for portfolio tracking and analysis.",
+            args: [
+                {
+                    name: "indicesType",
+                    description: "Filter to return indices by type: 'active' for actively managed, 'passive' for passively managed",
+                    type: "string",
+                },
+                {
+                    name: "limit",
+                    description: "Limit the number of items in response (default: 50)",
+                    type: "number",
+                    default: 50,
+                },
+                {
+                    name: "page",
+                    description: "Page number for pagination (default: 1)",
+                    type: "number",
+                    default: 1,
+                },
+            ],
+            executable: async (args, logger) => {
+                try {
+                    logger(`Querying indices with parameters: ${JSON.stringify(args)}`);
+                    return await (0, utils_1.tokenMetricsApiCall)(this.apiKey, this.baseApiUrl, "/indices", args, logger);
+                }
+                catch (e) {
+                    return (0, utils_1.exceptionHandler)(e, logger);
+                }
+            },
+        });
+    }
+    get getIndicesHoldings() {
+        return new game_1.GameFunction({
+            name: "get_indices_holdings",
+            description: "Get the current holdings of a given index, along with their respective weight in %. Shows detailed portfolio composition of crypto indices.",
+            args: [
+                {
+                    name: "id",
+                    description: "ID of the index. Example: 1",
+                    type: "string",
+                },
+            ],
+            executable: async (args, logger) => {
+                try {
+                    logger(`Querying indices holdings with parameters: ${JSON.stringify(args)}`);
+                    return await (0, utils_1.tokenMetricsApiCall)(this.apiKey, this.baseApiUrl, "/indices-holdings", args, logger);
+                }
+                catch (e) {
+                    return (0, utils_1.exceptionHandler)(e, logger);
+                }
+            },
+        });
+    }
+    get getIndicesPerformance() {
+        return new game_1.GameFunction({
+            name: "get_indices_performance",
+            description: "Get historical performance data for a given index, including cumulative return on investment (ROI) over time. Essential for analyzing index trends and evaluating investment performance.",
+            args: [
+                {
+                    name: "id",
+                    description: "ID of the index. Example: 1",
+                    type: "string",
+                },
+                {
+                    name: "startDate",
+                    description: "Start Date accepts date as a string - YYYY-MM-DD format. Example: 2025-01-01",
+                    type: "string",
+                },
+                {
+                    name: "endDate",
+                    description: "End Date accepts date as a string - YYYY-MM-DD format. Example: 2025-06-01",
+                    type: "string",
+                },
+                {
+                    name: "limit",
+                    description: "Limit the number of items in response (default: 50)",
+                    type: "number",
+                    default: 50,
+                },
+                {
+                    name: "page",
+                    description: "Page number for pagination (default: 1)",
+                    type: "number",
+                    default: 1,
+                },
+            ],
+            executable: async (args, logger) => {
+                try {
+                    logger(`Querying indices performance with parameters: ${JSON.stringify(args)}`);
+                    return await (0, utils_1.tokenMetricsApiCall)(this.apiKey, this.baseApiUrl, "/indices-performance", args, logger);
                 }
                 catch (e) {
                     return (0, utils_1.exceptionHandler)(e, logger);
