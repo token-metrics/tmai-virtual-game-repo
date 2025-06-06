@@ -4362,7 +4362,7 @@ class TokenMetricsChatInterface {
       const closePrice = signal.CLOSE || 0;
       const timestamp = signal.TIMESTAMP || new Date().toISOString();
       
-      // Determine signal type and styling based on SIGNAL field
+      // Determine signal type and styling based on SIGNAL field.
       let signalType = 'HOLD';
       let signalColor = colors.yellow;
       let signalEmoji = '🟡';
