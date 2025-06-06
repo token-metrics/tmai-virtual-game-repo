@@ -94,13 +94,13 @@ export GAME_API_KEY="your-game-api-key"
 ```
 
 **Required Environment Variables:**
-- `TOKENMETRICS_API_KEY`: Your Token Metrics API key (get one from [Token Metrics](https://tokenmetrics.com))
+- `TOKENMETRICS_API_KEY`: Your Token Metrics API key (get one from [Token Metrics](https://tokenmetrics.com/api))
 - `GAME_API_KEY`: Your Virtuals Protocol GAME API key
 
 > 💡 **How to Get API Keys:** 
 > 
 > **🔑 Token Metrics API Key:**
-> 1. Visit [Token Metrics.com](https://tokenmetrics.com)
+> 1. Visit [Token Metrics.com](https://tokenmetrics.com/api)
 > 2. Sign up for an account or log in
 > 3. Navigate to API section in your dashboard
 > 4. Generate your API key (starts with `tm-`)
