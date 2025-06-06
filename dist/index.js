@@ -28,6 +28,7 @@ class TokenMetricsPlugin {
                 this.getTraderGrades,
                 this.getInvestorGrades,
                 this.getTradingSignals,
+                this.getHourlyTradingSignals,
                 this.getMarketMetrics,
                 this.getQuantmetrics,
                 this.getHourlyOhlcv,
@@ -289,6 +290,60 @@ class TokenMetricsPlugin {
                 try {
                     logger(`Querying trading signals with parameters: ${JSON.stringify(args)}`);
                     return await (0, utils_1.tokenMetricsApiCall)(this.apiKey, this.baseApiUrl, "/trading-signals", args, logger);
+                }
+                catch (e) {
+                    return (0, utils_1.exceptionHandler)(e, logger);
+                }
+            },
+        });
+    }
+    get getHourlyTradingSignals() {
+        return new game_1.GameFunction({
+            name: "get_hourly_trading_signals",
+            description: "Get the AI generated trading signals for long and short positions for all tokens. Provides buy/sell recommendations with signal strength.",
+            args: [
+                {
+                    name: "token_id",
+                    description: "Comma separated Token IDs",
+                    type: "string",
+                },
+                {
+                    name: "startDate",
+                    description: "Start date in YYYY-MM-DD format",
+                    type: "string",
+                },
+                {
+                    name: "endDate",
+                    description: "End date in YYYY-MM-DD format",
+                    type: "string",
+                },
+                {
+                    name: "symbol",
+                    description: "Comma separated token symbols",
+                    type: "string",
+                },
+                {
+                    name: "signal",
+                    description: "Current signal value (1=bullish, -1=bearish, 0=no signal)",
+                    type: "string",
+                },
+                {
+                    name: "limit",
+                    description: "Limit the number of items in response (default: 50)",
+                    type: "number",
+                    default: 50,
+                },
+                {
+                    name: "page",
+                    description: "Page number for pagination (default: 1)",
+                    type: "number",
+                    default: 1,
+                },
+            ],
+            executable: async (args, logger) => {
+                try {
+                    logger(`Querying hourly trading signals with parameters: ${JSON.stringify(args)}`);
+                    return await (0, utils_1.tokenMetricsApiCall)(this.apiKey, this.baseApiUrl, "/hourly-trading-signals", args, logger);
                 }
                 catch (e) {
                     return (0, utils_1.exceptionHandler)(e, logger);

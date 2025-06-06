@@ -218,6 +218,60 @@ function formatIndicesPerformanceResponse(performance) {
     output += `${colors.green}✅ Performance tracking period: ${performance.length} data points${colors.reset}\n`;
     return output;
 }
+// Format hourly trading signals response
+function formatHourlyTradingSignalsResponse(signals) {
+    if (!signals || signals.length === 0) {
+        return `${colors.yellow}No hourly trading signals found.${colors.reset}`;
+    }
+    let output = `${colors.magenta}${colors.bright}⏰ Hourly AI Trading Signals${colors.reset}\n`;
+    output += `${colors.magenta}${'═'.repeat(75)}${colors.reset}\n\n`;
+    output += `${colors.green}Found ${signals.length} hourly trading signals:${colors.reset}\n\n`;
+    // Table header
+    output += `${colors.bright}${'Symbol'.padEnd(12)} ${'Name'.padEnd(20)} ${'Signal'.padEnd(8)} ${'Strength'.padEnd(12)} ${'Confidence'.padEnd(12)} ${'Price'.padEnd(15)}${colors.reset}\n`;
+    output += `${colors.dim}${'─'.repeat(12)} ${'─'.repeat(20)} ${'─'.repeat(8)} ${'─'.repeat(12)} ${'─'.repeat(12)} ${'─'.repeat(15)}${colors.reset}\n`;
+    signals.slice(0, 10).forEach(signal => {
+        const symbol = (signal.TOKEN_SYMBOL || 'N/A').padEnd(12);
+        const name = (signal.TOKEN_NAME || 'N/A').substring(0, 19).padEnd(20);
+        // Format signal
+        const tradingSignal = signal.TRADING_SIGNAL || 0;
+        let signalText = 'HOLD';
+        let signalColor = colors.yellow;
+        if (tradingSignal === 1) {
+            signalText = 'BUY';
+            signalColor = colors.green;
+        }
+        else if (tradingSignal === -1) {
+            signalText = 'SELL';
+            signalColor = colors.red;
+        }
+        const signalPadded = signalText.padEnd(8);
+        // Format strength
+        const strength = signal.SIGNAL_STRENGTH || 0;
+        const strengthText = Math.abs(strength).toFixed(2);
+        const strengthPadded = strengthText.padEnd(12);
+        // Format confidence
+        const confidence = signal.CONFIDENCE || 0;
+        const confidenceText = `${(confidence * 100).toFixed(1)}%`;
+        const confidencePadded = confidenceText.padEnd(12);
+        // Format price
+        const price = formatPrice(signal.CURRENT_PRICE || 0).padEnd(15);
+        output += `${colors.yellow}${symbol} ${colors.green}${name} ${signalColor}${signalPadded}${colors.reset} ${colors.white}${strengthPadded} ${colors.cyan}${confidencePadded} ${colors.white}${price}${colors.reset}\n`;
+    });
+    if (signals.length > 10) {
+        output += `\n${colors.dim}... and ${signals.length - 10} more signals${colors.reset}\n`;
+    }
+    // Summary statistics
+    const buySignals = signals.filter(s => s.TRADING_SIGNAL === 1).length;
+    const sellSignals = signals.filter(s => s.TRADING_SIGNAL === -1).length;
+    const holdSignals = signals.filter(s => s.TRADING_SIGNAL === 0).length;
+    const avgConfidence = signals.reduce((sum, s) => sum + (s.CONFIDENCE || 0), 0) / signals.length;
+    output += `\n${colors.magenta}${'═'.repeat(75)}${colors.reset}\n`;
+    output += `${colors.bright}📊 Signal Summary:${colors.reset}\n`;
+    output += `${colors.green}📈 BUY: ${buySignals}${colors.reset} | ${colors.red}📉 SELL: ${sellSignals}${colors.reset} | ${colors.yellow}⏸️  HOLD: ${holdSignals}${colors.reset}\n`;
+    output += `${colors.bright}🎯 Average Confidence: ${(avgConfidence * 100).toFixed(1)}%${colors.reset}\n`;
+    output += `${colors.dim}⏰ Signals are updated hourly with real-time market data${colors.reset}\n`;
+    return output;
+}
 // Enhanced API call function with better formatting
 async function tokenMetricsApiCall(apiKey, baseApiUrl, endpoint, args, logger) {
     // Prepare headers for the request
@@ -263,6 +317,9 @@ async function tokenMetricsApiCall(apiKey, baseApiUrl, endpoint, args, logger) {
     }
     else if (endpoint === '/indices-performance' && jsonResponse.data) {
         formattedMessage = formatIndicesPerformanceResponse(jsonResponse.data);
+    }
+    else if (endpoint === '/hourly-trading-signals' && jsonResponse.data) {
+        formattedMessage = formatHourlyTradingSignalsResponse(jsonResponse.data);
     }
     else {
         // Default formatting for other endpoints

@@ -8,7 +8,7 @@ The Token Metrics plugin seamlessly empowers G.A.M.E agents with comprehensive c
 
 ## ✨ Features
 
-- 📊 **Comprehensive Token Data**: Access to 20 Token Metrics API endpoints
+- 📊 **Comprehensive Token Data**: Access to 21 Token Metrics API endpoints
 - 🤖 **AI-Powered Analysis**: Get AI reports, sentiment analysis, and market insights
 - 📈 **Trading Intelligence**: Retrieve trader grades, investor grades, and trading signals
 - 📉 **Market Analytics**: Access quantmetrics, OHLCV data, and correlation analysis
@@ -34,7 +34,8 @@ The Token Metrics plugin seamlessly empowers G.A.M.E agents with comprehensive c
 | `getTraderGrades` | AI-powered trader performance grades | 🏆 Performance Analysis |
 | `getInvestorGrades` | Investor performance analysis | 🎯 Investment Insights |
 | `getTradingSignals` | Buy/sell/hold recommendations | 📡 Trading Signals |
-| `getMarketMetrics` | Comprehensive market analysis | 📈 Market Overview |
+| `getHourlyTradingSignals` | Hourly AI trading signals with confidence | ⏰ Real-time Signals |
+| `getMarketMetrics` | Comprehensive market analysis | 📊 Market Overview |
 
 ### 🔬 Advanced Analytics
 | Function | Description | 🎯 Purpose |
@@ -143,7 +144,7 @@ const agent = new GameAgent(process.env.GAME_API_KEY ?? "", {
   name: "🚀 Crypto Analysis Agent",
   goal: "Provide comprehensive cryptocurrency market analysis and trading insights",
   description: "You are an AI agent specialized in cryptocurrency analysis. Use Token Metrics API to help users make informed trading decisions! 📊",
-  workers: [tokenMetricsPlugin.getWorker({})], // Include ALL 20 functions
+  workers: [tokenMetricsPlugin.getWorker({})], // Include ALL 21 functions
 });
 
 // 🎯 Run your agent
@@ -236,6 +237,7 @@ npm run chat
 
 - 💰 `"What's the price of Bitcoin?"`
 - 📊 `"Show me trading signals"`
+- ⏰ `"Show me hourly trading signals"` (NEW!)
 - 🏆 `"Get trader grades for top tokens"`
 - 😊 `"Analyze market sentiment"`
 - 📝 `"Show me AI reports"`
@@ -257,9 +259,10 @@ npm run example:top-market-cap  # 👑 Get top market cap tokens
 
 ### 📈 Trading Analysis
 ```bash
-npm run example:trader-grades    # 🏆 Get trader performance grades
-npm run example:investor-grades  # 🎯 Get investor analysis
-npm run example:trading-signals  # 📡 Get trading recommendations
+npm run example:trader-grades         # 🏆 Get trader performance grades
+npm run example:investor-grades       # 🎯 Get investor analysis
+npm run example:trading-signals       # 📡 Get trading recommendations
+npm run example:hourly-trading-signals # ⏰ Get hourly AI trading signals (NEW!)
 ```
 
 ### 📉 Market Analytics
@@ -429,7 +432,8 @@ Need help? We've got you covered:
 ## 📈 Changelog
 
 ### 🎉 v1.0.0
-- ✨ Initial release with 20 Token Metrics API endpoints
+- ✨ Initial release with 21 Token Metrics API endpoints
+- 🆕 **NEW: Hourly Trading Signals** - Real-time AI trading recommendations updated hourly
 - 💬 Interactive chat interface
 - 📚 Comprehensive examples and tests
 - 🛡️ Built-in error handling and rate limiting

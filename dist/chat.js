@@ -181,94 +181,102 @@ class TokenMetricsChatInterface {
                 (lowerPrompt.includes('get') && lowerPrompt.includes('price'))) {
                 console.log(`${colors.yellow}🔍 Getting current price data...${colors.reset}`);
                 await this.getPriceData(prompt);
-                // 6. TRADING SIGNALS - /trading-signals endpoint
+                // 6. HOURLY TRADING SIGNALS - /hourly-trading-signals endpoint (more specific first)
+            }
+            else if ((lowerPrompt.includes('hourly') && lowerPrompt.includes('signal')) ||
+                (lowerPrompt.includes('hourly') && lowerPrompt.includes('trading')) ||
+                lowerPrompt.includes('hourly trading signals')) {
+                console.log(`${colors.yellow}🔍 Getting hourly trading signals...${colors.reset}`);
+                await this.getHourlyTradingSignals(prompt);
+                // 7. TRADING SIGNALS - /trading-signals endpoint
             }
             else if (lowerPrompt.includes('signal') ||
-                (lowerPrompt.includes('trading') && !lowerPrompt.includes('score')) ||
+                (lowerPrompt.includes('trading') && !lowerPrompt.includes('score') && !lowerPrompt.includes('hourly')) ||
                 lowerPrompt.includes('buy') ||
                 lowerPrompt.includes('sell') ||
                 (lowerPrompt.includes('trade') && !lowerPrompt.includes('trader'))) {
                 console.log(`${colors.yellow}🔍 Getting trading signals...${colors.reset}`);
                 await this.getTradingSignals();
-                // 7. MARKET METRICS - /market-metrics endpoint
+                // 8. MARKET METRICS - /market-metrics endpoint
             }
             else if ((lowerPrompt.includes('market') && lowerPrompt.includes('metric')) ||
                 (lowerPrompt.includes('market') && lowerPrompt.includes('indicator')) ||
                 lowerPrompt.includes('market data')) {
                 console.log(`${colors.yellow}🔍 Getting market metrics...${colors.reset}`);
                 await this.getMarketMetrics(prompt);
-                // 8. SENTIMENT ANALYSIS - /sentiments endpoint
+                // 9. SENTIMENT ANALYSIS - /sentiments endpoint
             }
             else if (lowerPrompt.includes('sentiment') || lowerPrompt.includes('social') ||
                 lowerPrompt.includes('twitter') || lowerPrompt.includes('reddit') || lowerPrompt.includes('news')) {
                 console.log(`${colors.yellow}🔍 Analyzing market sentiment...${colors.reset}`);
                 await this.getSentimentAnalysis();
-                // 9. SCENARIO ANALYSIS - /scenario-analysis endpoint
+                // 10. SCENARIO ANALYSIS - /scenario-analysis endpoint
             }
             else if (lowerPrompt.includes('price') && (lowerPrompt.includes('prediction') || lowerPrompt.includes('forecast') || lowerPrompt.includes('scenario')) ||
                 lowerPrompt.includes('scenario') || lowerPrompt.includes('prediction')) {
                 console.log(`${colors.yellow}🔍 Analyzing price scenarios...${colors.reset}`);
                 await this.getScenarioAnalysis(prompt);
-                // 10. CORRELATION ANALYSIS - /correlation endpoint
+                // 11. CORRELATION ANALYSIS - /correlation endpoint
             }
             else if (lowerPrompt.includes('correlation') || lowerPrompt.includes('relationship') ||
                 lowerPrompt.includes('portfolio') || lowerPrompt.includes('diversif')) {
                 console.log(`${colors.yellow}🔍 Analyzing token correlations...${colors.reset}`);
                 await this.getCorrelationAnalysis(prompt);
-                // 11. INDICES - /indices endpoint
+                // 12. INDICES - /indices endpoint
             }
             else if ((lowerPrompt.includes('indices') || lowerPrompt.includes('index')) &&
                 !lowerPrompt.includes('holding') && !lowerPrompt.includes('performance')) {
                 console.log(`${colors.yellow}🔍 Getting crypto indices...${colors.reset}`);
                 await this.getIndices(prompt);
-                // 12. INDICES HOLDINGS - /indices-holdings endpoint
+                // 13. INDICES HOLDINGS - /indices-holdings endpoint
             }
             else if ((lowerPrompt.includes('indices') || lowerPrompt.includes('index')) &&
                 (lowerPrompt.includes('holding') || lowerPrompt.includes('composition') || lowerPrompt.includes('weight'))) {
                 console.log(`${colors.yellow}🔍 Getting index holdings...${colors.reset}`);
                 await this.getIndicesHoldings(prompt);
-                // 13. INDICES PERFORMANCE - /indices-performance endpoint
+                // 14. INDICES PERFORMANCE - /indices-performance endpoint
             }
             else if ((lowerPrompt.includes('indices') || lowerPrompt.includes('index')) &&
                 (lowerPrompt.includes('performance') || lowerPrompt.includes('return') || lowerPrompt.includes('roi'))) {
                 console.log(`${colors.yellow}🔍 Getting index performance...${colors.reset}`);
                 await this.getIndicesPerformance(prompt);
-                // 14. QUANTMETRICS - /quantmetrics endpoint
+                // 15. QUANTMETRICS - /quantmetrics endpoint
             }
             else if (lowerPrompt.includes('quant') || lowerPrompt.includes('quantitative') ||
                 (lowerPrompt.includes('technical') && lowerPrompt.includes('analysis'))) {
                 console.log(`${colors.yellow}🔍 Getting quantitative metrics...${colors.reset}`);
                 await this.getQuantmetrics(prompt);
-                // 15. HOURLY OHLCV - /hourly-ohlcv endpoint
+                // 16. HOURLY OHLCV - /hourly-ohlcv endpoint
             }
             else if ((lowerPrompt.includes('hourly') && (lowerPrompt.includes('ohlcv') || lowerPrompt.includes('price'))) ||
                 lowerPrompt.includes('hourly data') || lowerPrompt.includes('hourly chart')) {
                 console.log(`${colors.yellow}🔍 Getting hourly OHLCV data...${colors.reset}`);
                 await this.getHourlyOhlcv(prompt);
-                // 16. DAILY OHLCV - /daily-ohlcv endpoint
+                // 17. DAILY OHLCV - /daily-ohlcv endpoint
             }
             else if ((lowerPrompt.includes('daily') && (lowerPrompt.includes('ohlcv') || lowerPrompt.includes('price'))) ||
                 lowerPrompt.includes('daily data') || lowerPrompt.includes('daily chart')) {
                 console.log(`${colors.yellow}🔍 Getting daily OHLCV data...${colors.reset}`);
                 await this.getDailyOhlcv(prompt);
-                // 17. AI REPORTS - /ai-reports endpoint
+                // 18. AI REPORTS - /ai-reports endpoint
             }
             else if ((lowerPrompt.includes('ai') && lowerPrompt.includes('report')) ||
                 lowerPrompt.includes('analysis report') || lowerPrompt.includes('detailed analysis')) {
                 console.log(`${colors.yellow}🔍 Getting AI reports...${colors.reset}`);
                 await this.getAiReports(prompt);
-                // 18. CRYPTO INVESTORS - /crypto-investors endpoint
+                // 19. CRYPTO INVESTORS - /crypto-investors endpoint
             }
             else if ((lowerPrompt.includes('investor') && !lowerPrompt.includes('grade') && !lowerPrompt.includes('rating')) ||
                 lowerPrompt.includes('institutional') || lowerPrompt.includes('smart money')) {
                 console.log(`${colors.yellow}🔍 Getting crypto investors data...${colors.reset}`);
                 await this.getCryptoInvestors();
-                // 19. RESISTANCE/SUPPORT - /resistance-support endpoint
+                // 20. RESISTANCE/SUPPORT - /resistance-support endpoint
             }
             else if (lowerPrompt.includes('resistance') || lowerPrompt.includes('support') ||
                 (lowerPrompt.includes('technical') && (lowerPrompt.includes('level') || lowerPrompt.includes('analysis')))) {
                 console.log(`${colors.yellow}🔍 Getting resistance/support levels...${colors.reset}`);
                 await this.getResistanceSupport(prompt);
+                // 21. MARKET OVERVIEW - Multiple endpoints
                 // 20. MARKET OVERVIEW - Multiple endpoints
             }
             else if (lowerPrompt.includes('market') && (lowerPrompt.includes('overview') || lowerPrompt.includes('general'))) {
@@ -2574,6 +2582,7 @@ class TokenMetricsChatInterface {
         console.log(`  • ${colors.green}resistance support [token]${colors.reset} - Get support/resistance levels`);
         console.log(`  • ${colors.green}price [token]${colors.reset} - Get current token prices`);
         console.log(`  • ${colors.green}trading signals${colors.reset} - Get AI trading signals`);
+        console.log(`  • ${colors.green}hourly trading signals${colors.reset} - Get hourly AI trading signals`);
         console.log(`  • ${colors.green}scenario analysis [token]${colors.reset} - Get scenario-based analysis`);
         console.log(`  • ${colors.green}correlation [token]${colors.reset} - Get correlation analysis`);
         console.log(`\n${colors.bright}📊 Market Overview:${colors.reset}`);
@@ -3879,6 +3888,139 @@ class TokenMetricsChatInterface {
         console.log(`${colors.green}✅ Performance tracking period: ${performance.length} data points${colors.reset}`);
         console.log(`${colors.dim}💡 Use "index holdings" to see current portfolio composition${colors.reset}`);
         console.log();
+    }
+    async getHourlyTradingSignals(prompt) {
+        try {
+            // Extract token IDs from the user's prompt - default to Bitcoin if none specified
+            const tokenIds = await this.extractTokensFromPrompt(prompt || "Bitcoin"); // Use actual prompt or default to Bitcoin
+            const primaryTokenId = tokenIds[0] || "3375"; // Default to Bitcoin ID
+            console.log(`${colors.dim}  🎯 Getting hourly trading signals for token ID: ${primaryTokenId}${colors.reset}`);
+            const result = await this.retryWithBackoff(async () => {
+                return await this.plugin.getHourlyTradingSignals.executable({
+                    token_id: primaryTokenId,
+                    limit: "10",
+                    page: "1"
+                }, (msg) => console.log(`${colors.dim}  📝 ${msg}${colors.reset}`));
+            });
+            if (result.status === 'done') {
+                // Parse the hourly trading signals data from the response
+                try {
+                    const responseMatch = result.feedback.match(/Response: ({.*})/);
+                    if (responseMatch) {
+                        const responseData = JSON.parse(responseMatch[1]);
+                        if (responseData.success && responseData.data && responseData.data.length > 0) {
+                            this.formatHourlyTradingSignalsResponse(responseData.data);
+                        }
+                        else {
+                            this.formatResponse("No hourly trading signals data available at the moment.", 'data');
+                        }
+                    }
+                    else {
+                        this.formatResponse("Hourly trading signals retrieved successfully. Check the detailed data above for AI-generated buy/sell recommendations.", 'data');
+                    }
+                }
+                catch (parseError) {
+                    this.formatResponse("Hourly trading signals retrieved successfully. Check the detailed data above for AI-generated buy/sell recommendations.", 'data');
+                }
+            }
+            else {
+                this.formatResponse(result.feedback, 'error');
+            }
+        }
+        catch (error) {
+            this.formatResponse(`Hourly trading signals failed: ${error}`, 'error');
+        }
+    }
+    formatHourlyTradingSignalsResponse(signals) {
+        console.log(`${colors.magenta}${colors.bright}⏰ Hourly AI Trading Signals [${new Date().toLocaleTimeString()}]${colors.reset}`);
+        console.log(`${colors.magenta}${'═'.repeat(75)}${colors.reset}`);
+        console.log(`${colors.dim}🤖 Real-time AI Trading Signals Updated Hourly${colors.reset}\n`);
+        signals.slice(0, 8).forEach((signal, index) => {
+            const tokenName = signal.TOKEN_NAME || 'Unknown Token';
+            const tokenSymbol = signal.TOKEN_SYMBOL || 'N/A';
+            const tradingSignal = parseInt(signal.SIGNAL) || 0;
+            const position = parseInt(signal.POSITION) || 0;
+            const closePrice = signal.CLOSE || 0;
+            const timestamp = signal.TIMESTAMP || new Date().toISOString();
+            // Determine signal type and styling based on SIGNAL field
+            let signalType = 'HOLD';
+            let signalColor = colors.yellow;
+            let signalEmoji = '🟡';
+            let actionEmoji = '⏸️';
+            if (tradingSignal === 1) {
+                signalType = 'BUY';
+                signalColor = colors.green;
+                signalEmoji = '🟢';
+                actionEmoji = '📈';
+            }
+            else if (tradingSignal === -1) {
+                signalType = 'SELL';
+                signalColor = colors.red;
+                signalEmoji = '🔴';
+                actionEmoji = '📉';
+            }
+            // Position interpretation
+            let positionText = 'NEUTRAL';
+            let positionColor = colors.yellow;
+            if (position === 1) {
+                positionText = 'LONG';
+                positionColor = colors.green;
+            }
+            else if (position === -1) {
+                positionText = 'SHORT';
+                positionColor = colors.red;
+            }
+            console.log(`${colors.bright}${index + 1}. ${tokenName} (${tokenSymbol})${colors.reset}`);
+            console.log(`${signalColor}${signalEmoji} ${actionEmoji} ${signalType} SIGNAL${colors.reset}`);
+            console.log(`📍 Position: ${positionColor}${positionText}${colors.reset}`);
+            console.log(`💰 Close Price: $${this.formatPrice(closePrice)}`);
+            console.log(`⏰ Time: ${new Date(timestamp).toLocaleString()}\n`);
+        });
+        // Summary statistics
+        const buySignals = signals.filter(s => parseInt(s.SIGNAL) === 1).length;
+        const sellSignals = signals.filter(s => parseInt(s.SIGNAL) === -1).length;
+        const holdSignals = signals.filter(s => parseInt(s.SIGNAL) === 0).length;
+        const longPositions = signals.filter(s => parseInt(s.POSITION) === 1).length;
+        const shortPositions = signals.filter(s => parseInt(s.POSITION) === -1).length;
+        const neutralPositions = signals.filter(s => parseInt(s.POSITION) === 0).length;
+        console.log(`${colors.dim}${'─'.repeat(75)}${colors.reset}`);
+        console.log(`${colors.bright}📊 Signal Summary:${colors.reset}`);
+        console.log(`${colors.green}📈 BUY: ${buySignals}${colors.reset} | ${colors.red}📉 SELL: ${sellSignals}${colors.reset} | ${colors.yellow}⏸️  HOLD: ${holdSignals}${colors.reset}`);
+        console.log(`${colors.bright}📍 Position Summary:${colors.reset}`);
+        console.log(`${colors.green}📈 LONG: ${longPositions}${colors.reset} | ${colors.red}📉 SHORT: ${shortPositions}${colors.reset} | ${colors.yellow}⚖️  NEUTRAL: ${neutralPositions}${colors.reset}`);
+        console.log(`${colors.dim}💡 Showing ${Math.min(8, signals.length)} signals. Total available: ${signals.length}${colors.reset}`);
+        console.log(`${colors.dim}⏰ Signals are updated hourly with real-time market data${colors.reset}`);
+        console.log();
+    }
+    getSignalStrengthBar(strength) {
+        const maxStrength = 1.0;
+        const normalizedStrength = Math.min(strength / maxStrength, 1);
+        const barLength = 20;
+        const filledLength = Math.round(normalizedStrength * barLength);
+        let color = colors.yellow;
+        if (normalizedStrength >= 0.7)
+            color = colors.green;
+        else if (normalizedStrength >= 0.4)
+            color = colors.yellow;
+        else
+            color = colors.red;
+        const filled = '█'.repeat(filledLength);
+        const empty = '░'.repeat(barLength - filledLength);
+        return `${color}${filled}${colors.dim}${empty}${colors.reset}`;
+    }
+    getConfidenceBar(confidence) {
+        const barLength = 15;
+        const filledLength = Math.round(confidence * barLength);
+        let color = colors.red;
+        if (confidence >= 0.8)
+            color = colors.green;
+        else if (confidence >= 0.6)
+            color = colors.yellow;
+        else if (confidence >= 0.4)
+            color = colors.yellow;
+        const filled = '█'.repeat(filledLength);
+        const empty = '░'.repeat(barLength - filledLength);
+        return `${color}${filled}${colors.dim}${empty}${colors.reset}`;
     }
 }
 function validateEnvironment() {
