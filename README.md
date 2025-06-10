@@ -408,7 +408,7 @@ The plugin includes comprehensive error handling:
 ```bash
 # ❌ Error: "Invalid API key" or "Unauthorized"
 # ✅ Solution:
-# 1. Verify your TokenMetrics API key is correct
+# 1. Verify your Token Metrics API key is correct
 # 2. Check that your API key starts with 'tm-'
 # 3. Ensure no extra spaces in your .env file
 export TOKENMETRICS_API_KEY="tm-your-actual-key-here"
@@ -429,7 +429,7 @@ config({ path: "./.env" }); // Must be before other imports
 # ❌ Error: "Network timeout" or "Connection refused"
 # ✅ Solutions:
 # 1. Check your internet connection
-# 2. Verify TokenMetrics API is accessible
+# 2. Verify Token Metrics API is accessible
 curl -H "x-api-key: your-key" https://api.tokenmetrics.com/v2/tokens
 
 # 3. Check for firewall/proxy issues
@@ -443,7 +443,7 @@ curl -H "x-api-key: your-key" https://api.tokenmetrics.com/v2/tokens
 # 1. Reduce request frequency
 # 2. Implement delays between calls
 # 3. Use pagination with smaller limits
-# 4. Contact TokenMetrics for higher rate limits
+# 4. Contact Token Metrics for higher rate limits
 ```
 
 #### **5. Invalid Token IDs**
@@ -528,7 +528,7 @@ If you're still having issues:
 1. **📋 Check Examples**: Review our 22+ example files
 2. **🧪 Run Tests**: Use our comprehensive test suite
 3. **💬 Interactive Mode**: Try `npm run chat` for hands-on testing
-4. **📖 Documentation**: Check [TokenMetrics API Docs](https://developers.tokenmetrics.com/)
+4. **📖 Documentation**: Check [Token Metrics API Docs](https://developers.tokenmetrics.com/)
 5. **🐛 Report Issues**: Create a GitHub issue with:
    - Error message
    - Your environment (Node.js version, OS)
@@ -549,35 +549,30 @@ If you're still having issues:
 ### **📸 Screenshots & Visual Demonstrations**
 
 #### **🚀 Plugin Installation & Setup**
-*[Add screenshot of successful installation and setup verification]*
+Screenshot 2025-06-11 at 00.57.43.png
 
 #### **💬 Interactive Chat Interface**
-*[Add screenshot/GIF of the chat interface in action]*
 
-#### **📊 Trading Signals Output**
-*[Add screenshot of formatted trading signals output]*
+Screenshot 2025-06-11 at 01.06.04.png
 
-#### **🏦 Crypto Indices Demo**
-*[Add screenshot of crypto indices data display]*
+Screenshot 2025-06-11 at 01.00.09.png
 
-### **🎥 Video Demonstrations**
+#### **📊 Crypto Market Sentiment**
 
-#### **📹 Complete Setup Walkthrough** *(~5 minutes)*
-*[Add video link: Environment setup, API key configuration, installation verification, first run]*
+Screenshot 2025-06-11 at 00.58.50.png
 
-#### **📹 Advanced Usage Demo** *(~8 minutes)*
-*[Add video link: Trading bot simulation, real-time analysis, error handling, GAME integration]*
+Screenshot 2025-06-11 at 00.59.48.png
 
-#### **📹 Developer Integration Guide** *(~12 minutes)*
-*[Add video link: Step-by-step integration, custom configuration, production deployment]*
+#### **🏦 QUANTITATIVE METRICS ANALYSIS**
 
-### **📋 Console Output Examples**
+Screenshot 2025-06-11 at 01.09.40.png
+
 
 #### **🔧 Setup Verification**
 ```bash
 $ npm run test:setup
 
-🔍 Testing TokenMetrics Plugin Setup...
+🔍 Testing Token Metrics Plugin Setup...
 ═══════════════════════════════════════
 
 ✅ Environment Check:
@@ -673,7 +668,7 @@ Rate Limiting: 60 requests/minute (within limits)
 
 ## 🤝 Contributing
 
-We welcome contributions to the TokenMetrics Virtuals Plugin! Here's how to contribute effectively:
+We welcome contributions to the Token Metrics Virtuals Plugin! Here's how to contribute effectively:
 
 ### **🚀 Quick Start for Contributors**
 
@@ -709,7 +704,7 @@ We welcome contributions to the TokenMetrics Virtuals Plugin! Here's how to cont
 - Fix documentation inconsistencies
 
 #### **✨ New Features**
-- Add new TokenMetrics API endpoints
+- Add new Token Metrics API endpoints
 - Enhance response formatting
 - Improve chat interface functionality
 - Add new testing scenarios
@@ -737,7 +732,7 @@ We welcome contributions to the TokenMetrics Virtuals Plugin! Here's how to cont
 #### **🎯 Plugin-Specific Requirements**
 - **GAME Integration**: All new functions must use `GameFunction` pattern
 - **Error Handling**: Implement proper `ExecutableGameFunctionResponse` handling
-- **API Consistency**: Follow existing TokenMetrics API patterns
+- **API Consistency**: Follow existing Token Metrics API patterns
 - **Response Formatting**: Use color-coded console output for user-friendly responses
 
 #### **🧪 Testing Requirements**
@@ -783,7 +778,7 @@ We welcome contributions to the TokenMetrics Virtuals Plugin! Here's how to cont
 ### **🎯 Specific Areas for Contribution**
 
 #### **🔥 High Priority**
-- **New API Endpoints**: Add missing TokenMetrics endpoints
+- **New API Endpoints**: Add missing Token Metrics endpoints
 - **Enhanced Error Handling**: Improve error messages and recovery
 - **Performance Optimization**: Optimize API calls and response processing
 - **Testing Coverage**: Expand test scenarios
@@ -825,7 +820,7 @@ We welcome contributions to the TokenMetrics Virtuals Plugin! Here's how to cont
 4. **🔄 Submit PR**
    ```bash
    git add .
-   git commit -m "feat: add new TokenMetrics endpoint integration"
+   git commit -m "feat: add new Token Metrics endpoint integration"
    git push origin feature/new-endpoint-integration
    ```
 

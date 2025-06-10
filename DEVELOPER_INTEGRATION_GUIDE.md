@@ -44,11 +44,11 @@ const tokenMetricsPlugin = new TokenMetricsPlugin({
 ### 4️⃣ **Create Your AI Agent**
 
 ```typescript
-// Create AI agent with TokenMetrics capabilities
+// Create AI agent with Token Metrics capabilities
 const agent = new GameAgent(process.env.GAME_API_KEY ?? "", {
   name: "🚀 Crypto Analysis Agent",
   goal: "Provide comprehensive cryptocurrency market analysis and trading insights",
-  description: "You are an AI agent specialized in cryptocurrency analysis. Use TokenMetrics API to help users make informed trading decisions! 📊",
+  description: "You are an AI agent specialized in cryptocurrency analysis. Use Token Metrics API to help users make informed trading decisions! 📊",
   workers: [tokenMetricsPlugin.getWorker({})], // Include ALL 17 functions
 });
 ```
@@ -100,7 +100,7 @@ const focusedAgent = new GameAgent(process.env.GAME_API_KEY ?? "", {
 // Advanced plugin configuration
 const advancedPlugin = new TokenMetricsPlugin({
   id: "my_custom_tokenmetrics",
-  name: "My Custom TokenMetrics Worker",
+  name: "My Custom Token Metrics Worker",
   description: "Custom TokenMetrics integration for my specific use case",
   apiClientConfig: {
     apiKey: process.env.TOKENMETRICS_API_KEY!,
@@ -250,4 +250,4 @@ Your integration automatically includes:
 
 ---
 
-**🚀 Your AI agent is now powered by TokenMetrics! Happy coding!** 
+**🚀 Your AI agent is now powered by Token Metrics! Happy coding!** 

@@ -1,7 +1,7 @@
-name: "TokenMetrics Virtuals Plugin"
+name: "Token Metrics Virtuals Plugin"
 version: "1.0.0"
-description: "Complete TokenMetrics integration plugin for Virtuals Protocol GAME framework providing AI-powered cryptocurrency analysis with 21 comprehensive API endpoints"
-author: "TokenMetrics"
+description: "Complete Token Metrics integration plugin for Virtuals Protocol GAME framework providing AI-powered cryptocurrency analysis with 21 comprehensive API endpoints"
+author: "Token Metrics"
 license: "MIT"
 homepage: "https://github.com/tokenmetrics/tokenmetrics-virtuals-plugin"
 repository: "https://github.com/tokenmetrics/tokenmetrics-virtuals-plugin.git"
@@ -37,7 +37,7 @@ requirements:
 api_requirements:
   tokenmetrics_api_key:
     required: true
-    description: "TokenMetrics API key for accessing cryptocurrency data"
+    description: "Token Metrics API key for accessing cryptocurrency data"
     how_to_get: "Visit https://tokenmetrics.com/api to sign up and generate API key"
   game_api_key:
     required: true
@@ -205,7 +205,7 @@ performance:
 # Maintenance & Updates
 maintenance:
   last_updated: "2024-12-19"
-  update_frequency: "Regular updates with TokenMetrics API changes"
+  update_frequency: "Regular updates with Token Metrics API changes"
   backward_compatibility: true
   version_strategy: "Semantic versioning"
 
@@ -213,7 +213,7 @@ maintenance:
 support:
   issues: "https://github.com/tokenmetrics/tokenmetrics-virtuals-plugin/issues"
   documentation: "https://developers.tokenmetrics.com/"
-  community: "TokenMetrics Discord/Telegram"
+  community: "Token Metrics Discord/Telegram"
   email: "support@tokenmetrics.com"
 
 # Plugin Status

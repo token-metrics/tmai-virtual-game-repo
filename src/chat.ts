@@ -83,7 +83,7 @@ class TokenMetricsChatInterface {
   private formatHeader() {
     console.clear();
     console.log(`${colors.cyan}${colors.bright}╔══════════════════════════════════════════════════════════════╗${colors.reset}`);
-    console.log(`${colors.cyan}${colors.bright}║                    🚀 TokenMetrics AI Chat                   ║${colors.reset}`);
+    console.log(`${colors.cyan}${colors.bright}║                    🚀 Token Metrics AI Chat                  ║${colors.reset}`);
     console.log(`${colors.cyan}${colors.bright}║              Powered by Virtuals Protocol GAME              ║${colors.reset}`);
     console.log(`${colors.cyan}${colors.bright}╚══════════════════════════════════════════════════════════════╝${colors.reset}`);
     console.log();
@@ -98,7 +98,7 @@ class TokenMetricsChatInterface {
     
     switch (type) {
       case 'ai':
-        console.log(`${colors.green}${colors.bright}🤖 TokenMetrics AI Response [${timestamp}]${colors.reset}`);
+        console.log(`${colors.green}${colors.bright}🤖 Token Metrics AI Response [${timestamp}]${colors.reset}`);
         console.log(`${colors.green}${'═'.repeat(60)}${colors.reset}`);
         break;
       case 'data':
@@ -2850,7 +2850,7 @@ class TokenMetricsChatInterface {
           const lowerInput = trimmedInput.toLowerCase();
           
           if (lowerInput === 'quit' || lowerInput === 'exit') {
-            console.log(`${colors.green}${colors.bright}👋 Thanks for using TokenMetrics AI Chat! Happy trading! 🚀${colors.reset}`);
+            console.log(`${colors.green}${colors.bright}👋 Thanks for using Token Metrics AI Chat! Happy trading! 🚀${colors.reset}`);
             isActive = false;
             this.rl.close();
             return;
