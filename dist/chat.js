@@ -68,7 +68,6 @@ class TokenMetricsChatInterface {
         this.rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
-            prompt: `${colors.cyan}${colors.bright}💬 Your prompt: ${colors.reset}`,
         });
     }
     async rateLimitDelay() {
@@ -182,82 +181,108 @@ class TokenMetricsChatInterface {
                 (lowerPrompt.includes('get') && lowerPrompt.includes('price'))) {
                 console.log(`${colors.yellow}🔍 Getting current price data...${colors.reset}`);
                 await this.getPriceData(prompt);
-                // 6. TRADING SIGNALS - /trading-signals endpoint
+                // 6. HOURLY TRADING SIGNALS - /hourly-trading-signals endpoint (more specific first)
+            }
+            else if ((lowerPrompt.includes('hourly') && lowerPrompt.includes('signal')) ||
+                (lowerPrompt.includes('hourly') && lowerPrompt.includes('trading')) ||
+                lowerPrompt.includes('hourly trading signals')) {
+                console.log(`${colors.yellow}🔍 Getting hourly trading signals...${colors.reset}`);
+                await this.getHourlyTradingSignals(prompt);
+                // 7. TRADING SIGNALS - /trading-signals endpoint
             }
             else if (lowerPrompt.includes('signal') ||
-                (lowerPrompt.includes('trading') && !lowerPrompt.includes('score')) ||
+                (lowerPrompt.includes('trading') && !lowerPrompt.includes('score') && !lowerPrompt.includes('hourly')) ||
                 lowerPrompt.includes('buy') ||
                 lowerPrompt.includes('sell') ||
                 (lowerPrompt.includes('trade') && !lowerPrompt.includes('trader'))) {
                 console.log(`${colors.yellow}🔍 Getting trading signals...${colors.reset}`);
                 await this.getTradingSignals();
-                // 7. MARKET METRICS - /market-metrics endpoint
+                // 8. MARKET METRICS - /market-metrics endpoint
             }
             else if ((lowerPrompt.includes('market') && lowerPrompt.includes('metric')) ||
                 (lowerPrompt.includes('market') && lowerPrompt.includes('indicator')) ||
                 lowerPrompt.includes('market data')) {
                 console.log(`${colors.yellow}🔍 Getting market metrics...${colors.reset}`);
                 await this.getMarketMetrics(prompt);
-                // 8. SENTIMENT ANALYSIS - /sentiments endpoint
+                // 9. SENTIMENT ANALYSIS - /sentiments endpoint
             }
             else if (lowerPrompt.includes('sentiment') || lowerPrompt.includes('social') ||
                 lowerPrompt.includes('twitter') || lowerPrompt.includes('reddit') || lowerPrompt.includes('news')) {
                 console.log(`${colors.yellow}🔍 Analyzing market sentiment...${colors.reset}`);
                 await this.getSentimentAnalysis();
-                // 9. SCENARIO ANALYSIS - /scenario-analysis endpoint
+                // 10. SCENARIO ANALYSIS - /scenario-analysis endpoint
             }
             else if (lowerPrompt.includes('price') && (lowerPrompt.includes('prediction') || lowerPrompt.includes('forecast') || lowerPrompt.includes('scenario')) ||
                 lowerPrompt.includes('scenario') || lowerPrompt.includes('prediction')) {
                 console.log(`${colors.yellow}🔍 Analyzing price scenarios...${colors.reset}`);
                 await this.getScenarioAnalysis(prompt);
-                // 10. CORRELATION ANALYSIS - /correlation endpoint
+                // 11. CORRELATION ANALYSIS - /correlation endpoint
             }
             else if (lowerPrompt.includes('correlation') || lowerPrompt.includes('relationship') ||
                 lowerPrompt.includes('portfolio') || lowerPrompt.includes('diversif')) {
                 console.log(`${colors.yellow}🔍 Analyzing token correlations...${colors.reset}`);
                 await this.getCorrelationAnalysis(prompt);
-                // 11. QUANTMETRICS - /quantmetrics endpoint
+                // 12. INDICES - /indices endpoint
+            }
+            else if ((lowerPrompt.includes('indices') || lowerPrompt.includes('index')) &&
+                !lowerPrompt.includes('holding') && !lowerPrompt.includes('performance')) {
+                console.log(`${colors.yellow}🔍 Getting crypto indices...${colors.reset}`);
+                await this.getIndices(prompt);
+                // 13. INDICES HOLDINGS - /indices-holdings endpoint
+            }
+            else if ((lowerPrompt.includes('indices') || lowerPrompt.includes('index')) &&
+                (lowerPrompt.includes('holding') || lowerPrompt.includes('composition') || lowerPrompt.includes('weight'))) {
+                console.log(`${colors.yellow}🔍 Getting index holdings...${colors.reset}`);
+                await this.getIndicesHoldings(prompt);
+                // 14. INDICES PERFORMANCE - /indices-performance endpoint
+            }
+            else if ((lowerPrompt.includes('indices') || lowerPrompt.includes('index')) &&
+                (lowerPrompt.includes('performance') || lowerPrompt.includes('return') || lowerPrompt.includes('roi'))) {
+                console.log(`${colors.yellow}🔍 Getting index performance...${colors.reset}`);
+                await this.getIndicesPerformance(prompt);
+                // 15. QUANTMETRICS - /quantmetrics endpoint
             }
             else if (lowerPrompt.includes('quant') || lowerPrompt.includes('quantitative') ||
                 (lowerPrompt.includes('technical') && lowerPrompt.includes('analysis'))) {
                 console.log(`${colors.yellow}🔍 Getting quantitative metrics...${colors.reset}`);
                 await this.getQuantmetrics(prompt);
-                // 12. HOURLY OHLCV - /hourly-ohlcv endpoint
+                // 16. HOURLY OHLCV - /hourly-ohlcv endpoint
             }
             else if ((lowerPrompt.includes('hourly') && (lowerPrompt.includes('ohlcv') || lowerPrompt.includes('price'))) ||
                 lowerPrompt.includes('hourly data') || lowerPrompt.includes('hourly chart')) {
                 console.log(`${colors.yellow}🔍 Getting hourly OHLCV data...${colors.reset}`);
                 await this.getHourlyOhlcv(prompt);
-                // 13. DAILY OHLCV - /daily-ohlcv endpoint
+                // 17. DAILY OHLCV - /daily-ohlcv endpoint
             }
             else if ((lowerPrompt.includes('daily') && (lowerPrompt.includes('ohlcv') || lowerPrompt.includes('price'))) ||
                 lowerPrompt.includes('daily data') || lowerPrompt.includes('daily chart')) {
                 console.log(`${colors.yellow}🔍 Getting daily OHLCV data...${colors.reset}`);
                 await this.getDailyOhlcv(prompt);
-                // 14. AI REPORTS - /ai-reports endpoint
+                // 18. AI REPORTS - /ai-reports endpoint
             }
             else if ((lowerPrompt.includes('ai') && lowerPrompt.includes('report')) ||
                 lowerPrompt.includes('analysis report') || lowerPrompt.includes('detailed analysis')) {
                 console.log(`${colors.yellow}🔍 Getting AI reports...${colors.reset}`);
                 await this.getAiReports(prompt);
-                // 15. CRYPTO INVESTORS - /crypto-investors endpoint
+                // 19. CRYPTO INVESTORS - /crypto-investors endpoint
             }
             else if ((lowerPrompt.includes('investor') && !lowerPrompt.includes('grade') && !lowerPrompt.includes('rating')) ||
                 lowerPrompt.includes('institutional') || lowerPrompt.includes('smart money')) {
                 console.log(`${colors.yellow}🔍 Getting crypto investors data...${colors.reset}`);
                 await this.getCryptoInvestors();
-                // 16. RESISTANCE/SUPPORT - /resistance-support endpoint
+                // 20. RESISTANCE/SUPPORT - /resistance-support endpoint
             }
             else if (lowerPrompt.includes('resistance') || lowerPrompt.includes('support') ||
                 (lowerPrompt.includes('technical') && (lowerPrompt.includes('level') || lowerPrompt.includes('analysis')))) {
                 console.log(`${colors.yellow}🔍 Getting resistance/support levels...${colors.reset}`);
                 await this.getResistanceSupport(prompt);
-                // 17. MARKET OVERVIEW - Multiple endpoints
+                // 21. MARKET OVERVIEW - Multiple endpoints
+                // 20. MARKET OVERVIEW - Multiple endpoints
             }
             else if (lowerPrompt.includes('market') && (lowerPrompt.includes('overview') || lowerPrompt.includes('general'))) {
                 console.log(`${colors.yellow}🔍 Getting market overview...${colors.reset}`);
                 await this.getMarketOverview();
-                // 18. AI CHAT - /tmai endpoint (for general questions)
+                // 21. AI CHAT - /tmai endpoint (for general questions)
             }
             else if (lowerPrompt.includes('ai') || lowerPrompt.includes('chat') || lowerPrompt.includes('ask') ||
                 lowerPrompt.includes('what') || lowerPrompt.includes('how') || lowerPrompt.includes('why') ||
@@ -616,25 +641,26 @@ class TokenMetricsChatInterface {
                     page: "1"
                 }, (msg) => {
                     console.log(`${colors.dim}  📝 ${msg}${colors.reset}`);
-                    // Parse and format the response if it contains data
-                    if (msg.includes('Successfully queried TokenMetrics data')) {
-                        try {
-                            const responseMatch = msg.match(/Response: (.+)$/);
-                            if (responseMatch) {
-                                const responseData = JSON.parse(responseMatch[1]);
-                                if (responseData.data && responseData.data.length > 0) {
-                                    this.formatMarketMetricsResponse(responseData.data);
-                                }
-                            }
-                        }
-                        catch (e) {
-                            // If parsing fails, continue with default behavior
-                        }
-                    }
                 });
             });
             if (result.status === 'done') {
-                // Don't show generic message since we've already formatted the data
+                // Try to parse the full response from result.feedback
+                try {
+                    const responseIndex = result.feedback.lastIndexOf('Response: ');
+                    if (responseIndex !== -1) {
+                        const jsonString = result.feedback.substring(responseIndex + 10).trim();
+                        const responseData = JSON.parse(jsonString);
+                        if (responseData.data && responseData.data.length > 0) {
+                            this.formatMarketMetricsResponse(responseData.data);
+                            return; // Exit early since we've formatted the data
+                        }
+                    }
+                }
+                catch (e) {
+                    // If parsing fails, continue with default behavior
+                }
+                // Fallback to generic message if parsing fails
+                this.formatResponse("Successfully retrieved market metrics data", 'data');
             }
             else {
                 this.formatResponse(result.feedback, 'error');
@@ -1988,32 +2014,33 @@ class TokenMetricsChatInterface {
             const result = await this.retryWithBackoff(async () => {
                 return await this.plugin.getCryptoInvestors.executable({ limit: "50", page: "1" }, (msg) => {
                     console.log(`${colors.dim}  📝 ${msg}${colors.reset}`);
-                    // Parse and format the response if it contains data
-                    if (msg.includes('Successfully queried TokenMetrics data')) {
-                        try {
-                            const responseMatch = msg.match(/Response: (.+)$/);
-                            if (responseMatch) {
-                                const responseData = JSON.parse(responseMatch[1]);
-                                if (responseData.data && responseData.data.length > 0) {
-                                    this.formatCryptoInvestorsResponse(responseData.data);
-                                }
-                            }
-                        }
-                        catch (e) {
-                            // If parsing fails, continue with default behavior
-                        }
-                    }
                 });
             });
             if (result.status === 'done') {
-                // Don't show generic message since we've already formatted the data
+                // Try to parse the full response from result.feedback
+                try {
+                    const responseIndex = result.feedback.lastIndexOf('Response: ');
+                    if (responseIndex !== -1) {
+                        const jsonString = result.feedback.substring(responseIndex + 10).trim();
+                        const responseData = JSON.parse(jsonString);
+                        if (responseData.data && responseData.data.length > 0) {
+                            this.formatCryptoInvestorsResponse(responseData.data);
+                            return; // Exit early since we've formatted the data
+                        }
+                    }
+                }
+                catch (e) {
+                    // If parsing fails, continue with default behavior
+                }
+                // Fallback to generic message if parsing fails
+                this.formatResponse("Successfully retrieved crypto investors data", 'data');
             }
             else {
                 this.formatResponse(result.feedback, 'error');
             }
         }
         catch (error) {
-            this.formatResponse(`Failed to get crypto investors: ${error}`, 'error');
+            this.formatResponse(`Crypto investors query failed: ${error}`, 'error');
         }
     }
     formatCryptoInvestorsResponse(data) {
@@ -2555,6 +2582,7 @@ class TokenMetricsChatInterface {
         console.log(`  • ${colors.green}resistance support [token]${colors.reset} - Get support/resistance levels`);
         console.log(`  • ${colors.green}price [token]${colors.reset} - Get current token prices`);
         console.log(`  • ${colors.green}trading signals${colors.reset} - Get AI trading signals`);
+        console.log(`  • ${colors.green}hourly trading signals${colors.reset} - Get hourly AI trading signals`);
         console.log(`  • ${colors.green}scenario analysis [token]${colors.reset} - Get scenario-based analysis`);
         console.log(`  • ${colors.green}correlation [token]${colors.reset} - Get correlation analysis`);
         console.log(`\n${colors.bright}📊 Market Overview:${colors.reset}`);
@@ -2571,52 +2599,76 @@ class TokenMetricsChatInterface {
     }
     async start() {
         this.formatHeader();
-        // Set up event handlers for the readline interface
-        this.rl.on('line', async (input) => {
-            const trimmedInput = input.trim();
-            if (!trimmedInput) {
-                this.promptUser();
+        let isActive = true;
+        const askQuestion = () => {
+            // Check if the interface is still active
+            if (!isActive) {
                 return;
             }
-            const lowerInput = trimmedInput.toLowerCase();
-            if (lowerInput === 'quit' || lowerInput === 'exit') {
-                console.log(`${colors.green}${colors.bright}👋 Thanks for using TokenMetrics AI Chat! Happy trading! 🚀${colors.reset}`);
-                this.rl.close();
-                return;
-            }
-            if (lowerInput === 'help') {
-                this.showHelp();
-                this.promptUser();
-                return;
-            }
-            if (lowerInput === 'test') {
-                await this.testTokenDetection();
-                this.promptUser();
-                return;
-            }
-            if (lowerInput === 'clear') {
-                this.formatHeader();
-                this.promptUser();
-                return;
-            }
-            console.log();
+            // Wrap the question in a try-catch to handle readline errors gracefully
             try {
-                await this.analyzePrompt(trimmedInput);
+                this.rl.question(`${colors.cyan}${colors.bright}💬 Your prompt: ${colors.reset}`, async (input) => {
+                    const trimmedInput = input.trim();
+                    if (!trimmedInput) {
+                        askQuestion();
+                        return;
+                    }
+                    const lowerInput = trimmedInput.toLowerCase();
+                    if (lowerInput === 'quit' || lowerInput === 'exit') {
+                        console.log(`${colors.green}${colors.bright}👋 Thanks for using TokenMetrics AI Chat! Happy trading! 🚀${colors.reset}`);
+                        isActive = false;
+                        this.rl.close();
+                        return;
+                    }
+                    if (lowerInput === 'help') {
+                        this.showHelp();
+                        askQuestion();
+                        return;
+                    }
+                    if (lowerInput === 'test') {
+                        await this.testTokenDetection();
+                        askQuestion();
+                        return;
+                    }
+                    if (lowerInput === 'clear') {
+                        this.formatHeader();
+                        askQuestion();
+                        return;
+                    }
+                    console.log();
+                    try {
+                        await this.analyzePrompt(trimmedInput);
+                    }
+                    catch (error) {
+                        console.log(`${colors.red}❌ Error processing request: ${error}${colors.reset}`);
+                    }
+                    // Only ask next question if interface is still active
+                    if (isActive) {
+                        askQuestion();
+                    }
+                });
             }
             catch (error) {
-                console.log(`${colors.red}❌ Error processing request: ${error}${colors.reset}`);
+                // Silently handle readline errors to prevent the ERR_USE_AFTER_CLOSE error
+                if (error?.code === 'ERR_USE_AFTER_CLOSE') {
+                    // Interface was closed, don't continue
+                    return;
+                }
+                // For other errors, log them but don't crash
+                console.log(`${colors.red}❌ Interface error: ${error?.message || error}${colors.reset}`);
             }
-            this.promptUser();
+        };
+        // Add error handlers for the readline interface
+        this.rl.on('error', (error) => {
+            // Silently handle readline errors to prevent crashes
+            if (error?.code !== 'ERR_USE_AFTER_CLOSE') {
+                console.log(`${colors.red}❌ Readline error: ${error?.message || error}${colors.reset}`);
+            }
         });
         this.rl.on('close', () => {
-            // Interface closed, exit gracefully
-            process.exit(0);
+            isActive = false;
         });
-        // Start the first prompt
-        this.promptUser();
-    }
-    promptUser() {
-        this.rl.prompt();
+        askQuestion();
     }
     formatLargeNumber(num) {
         const number = parseFloat(num);
@@ -3544,37 +3596,433 @@ class TokenMetricsChatInterface {
         }
     }
     async testTokenDetection() {
-        console.log(`${colors.blue}${colors.bright}🔍 Testing Token Detection Logic${colors.reset}`);
-        console.log(`${colors.blue}${'═'.repeat(50)}${colors.reset}\n`);
-        // Get token mappings
-        const tokenMappings = await this.fetchTokenMappings();
-        console.log(`${colors.green}📊 Total tokens in cache: ${Object.keys(tokenMappings).length}${colors.reset}`);
-        // Show first 20 tokens
-        console.log(`${colors.yellow}📋 First 20 tokens in cache:${colors.reset}`);
-        Object.entries(tokenMappings).slice(0, 20).forEach(([name, id], index) => {
-            console.log(`  ${index + 1}. ${name} -> ${id}`);
-        });
-        // Test specific searches
-        const testQueries = ['ethereum', 'bitcoin', 'btc', 'eth'];
-        console.log(`\n${colors.cyan}🎯 Testing token detection for common queries:${colors.reset}`);
-        for (const query of testQueries) {
-            console.log(`\n${colors.bright}Testing: "${query}"${colors.reset}`);
-            const results = await this.extractTokensFromPrompt(`what is the price of ${query}`);
-            console.log(`  Results: ${results.length > 0 ? results.join(', ') : 'No matches found'}`);
-        }
-        // Search for tokens containing common names
-        console.log(`\n${colors.magenta}🔍 Searching for tokens containing common crypto names:${colors.reset}`);
-        const searchTerms = ['bitcoin', 'ethereum', 'btc', 'eth'];
-        for (const term of searchTerms) {
-            const matches = Object.entries(tokenMappings).filter(([name, id]) => name.toLowerCase().includes(term.toLowerCase()));
-            console.log(`\n  "${term}" matches (${matches.length}):`);
-            matches.slice(0, 5).forEach(([name, id]) => {
-                console.log(`    ${name} -> ${id}`);
-            });
+        console.log(`${colors.cyan}🧪 Testing token detection...${colors.reset}`);
+        const testPrompts = [
+            "What is the price of Bitcoin?",
+            "Show me Ethereum data",
+            "Get BTC and ETH prices",
+            "Analyze Solana and Cardano",
+            "Bitcoin, Ethereum, and Dogecoin analysis"
+        ];
+        for (const prompt of testPrompts) {
+            console.log(`\n${colors.yellow}Testing: "${prompt}"${colors.reset}`);
+            const tokens = await this.extractTokensFromPrompt(prompt);
+            console.log(`${colors.green}Detected tokens: ${tokens.join(', ')}${colors.reset}`);
         }
     }
+    async getIndices(prompt) {
+        try {
+            // Extract indices type from prompt if specified
+            const lowerPrompt = prompt.toLowerCase();
+            let indicesType = '';
+            if (lowerPrompt.includes('active')) {
+                indicesType = 'active';
+            }
+            else if (lowerPrompt.includes('passive')) {
+                indicesType = 'passive';
+            }
+            console.log(`${colors.dim}  🎯 Getting crypto indices${indicesType ? ` (${indicesType})` : ''}...${colors.reset}`);
+            const args = { limit: "50", page: "1" };
+            if (indicesType) {
+                args.indicesType = indicesType;
+            }
+            const result = await this.retryWithBackoff(async () => {
+                return await this.plugin.getIndices.executable(args, (msg) => console.log(`${colors.dim}  📝 ${msg}${colors.reset}`));
+            });
+            if (result.status === 'done') {
+                // Parse the indices data from the response
+                try {
+                    const responseMatch = result.feedback.match(/Response: ({.*})/);
+                    if (responseMatch) {
+                        const responseData = JSON.parse(responseMatch[1]);
+                        if (responseData.success && responseData.data && responseData.data.length > 0) {
+                            this.formatIndicesResponse(responseData.data);
+                        }
+                        else {
+                            this.formatResponse("No indices data available at the moment.", 'data');
+                        }
+                    }
+                    else {
+                        this.formatResponse("Crypto indices data retrieved successfully! This shows available indices for portfolio tracking and analysis.", 'data');
+                    }
+                }
+                catch (parseError) {
+                    this.formatResponse("Crypto indices data retrieved successfully! This shows available indices for portfolio tracking and analysis.", 'data');
+                }
+            }
+            else {
+                this.formatResponse(result.feedback, 'error');
+            }
+        }
+        catch (error) {
+            this.formatResponse(`Indices data retrieval failed: ${error}`, 'error');
+        }
+    }
+    async getIndicesHoldings(prompt) {
+        try {
+            // Extract index ID from prompt (default to 1 if not specified)
+            const lowerPrompt = prompt.toLowerCase();
+            let indexId = '1'; // Default index ID
+            // Try to extract index ID from prompt
+            const idMatch = prompt.match(/index\s+(\d+)|id\s+(\d+)/i);
+            if (idMatch) {
+                indexId = idMatch[1] || idMatch[2];
+            }
+            console.log(`${colors.dim}  🎯 Getting holdings for index ${indexId}...${colors.reset}`);
+            const result = await this.retryWithBackoff(async () => {
+                return await this.plugin.getIndicesHoldings.executable({ id: indexId }, (msg) => console.log(`${colors.dim}  📝 ${msg}${colors.reset}`));
+            });
+            if (result.status === 'done') {
+                // Parse the holdings data from the response
+                try {
+                    const responseMatch = result.feedback.match(/Response: ({.*})/);
+                    if (responseMatch) {
+                        const responseData = JSON.parse(responseMatch[1]);
+                        if (responseData.success && responseData.data && responseData.data.length > 0) {
+                            this.formatIndicesHoldingsResponse(responseData.data, indexId);
+                        }
+                        else {
+                            this.formatResponse(`No holdings data available for index ${indexId}.`, 'data');
+                        }
+                    }
+                    else {
+                        this.formatResponse(`Index holdings data retrieved successfully for index ${indexId}! This shows the portfolio composition and weights.`, 'data');
+                    }
+                }
+                catch (parseError) {
+                    this.formatResponse(`Index holdings data retrieved successfully for index ${indexId}! This shows the portfolio composition and weights.`, 'data');
+                }
+            }
+            else {
+                this.formatResponse(result.feedback, 'error');
+            }
+        }
+        catch (error) {
+            this.formatResponse(`Index holdings retrieval failed: ${error}`, 'error');
+        }
+    }
+    async getIndicesPerformance(prompt) {
+        try {
+            // Extract index ID and date range from prompt
+            const lowerPrompt = prompt.toLowerCase();
+            let indexId = '1'; // Default index ID
+            // Try to extract index ID from prompt
+            const idMatch = prompt.match(/index\s+(\d+)|id\s+(\d+)/i);
+            if (idMatch) {
+                indexId = idMatch[1] || idMatch[2];
+            }
+            // Set default date range (last 30 days)
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            const startDateStr = startDate.toISOString().split('T')[0];
+            const endDateStr = endDate.toISOString().split('T')[0];
+            console.log(`${colors.dim}  🎯 Getting performance for index ${indexId} (${startDateStr} to ${endDateStr})...${colors.reset}`);
+            const result = await this.retryWithBackoff(async () => {
+                return await this.plugin.getIndicesPerformance.executable({
+                    id: indexId,
+                    startDate: startDateStr,
+                    endDate: endDateStr,
+                    limit: "50",
+                    page: "1"
+                }, (msg) => console.log(`${colors.dim}  📝 ${msg}${colors.reset}`));
+            });
+            if (result.status === 'done') {
+                // Parse the performance data from the response
+                try {
+                    const responseMatch = result.feedback.match(/Response: ({.*})/);
+                    if (responseMatch) {
+                        const responseData = JSON.parse(responseMatch[1]);
+                        if (responseData.success && responseData.data && responseData.data.length > 0) {
+                            this.formatIndicesPerformanceResponse(responseData.data, indexId);
+                        }
+                        else {
+                            this.formatResponse(`No performance data available for index ${indexId} in the specified period.`, 'data');
+                        }
+                    }
+                    else {
+                        this.formatResponse(`Index performance data retrieved successfully for index ${indexId}! This shows historical ROI and performance trends.`, 'data');
+                    }
+                }
+                catch (parseError) {
+                    this.formatResponse(`Index performance data retrieved successfully for index ${indexId}! This shows historical ROI and performance trends.`, 'data');
+                }
+            }
+            else {
+                this.formatResponse(result.feedback, 'error');
+            }
+        }
+        catch (error) {
+            this.formatResponse(`Index performance retrieval failed: ${error}`, 'error');
+        }
+    }
+    formatIndicesResponse(indices) {
+        console.log(`${colors.cyan}${colors.bright}📊 TokenMetrics Crypto Indices [${new Date().toLocaleTimeString()}]${colors.reset}`);
+        console.log(`${colors.cyan}${'═'.repeat(70)}${colors.reset}`);
+        console.log(`${colors.dim}🎯 Portfolio Tracking & Investment Indices${colors.reset}\n`);
+        if (!indices || indices.length === 0) {
+            console.log(`${colors.yellow}No indices data available.${colors.reset}`);
+            return;
+        }
+        console.log(`${colors.green}Found ${indices.length} crypto indices:${colors.reset}\n`);
+        // Table header
+        console.log(`${colors.bright}${'ID'.padEnd(6)} ${'Name'.padEnd(25)} ${'Ticker'.padEnd(15)} ${'24H Change'.padEnd(12)} ${'1M Change'.padEnd(12)}${colors.reset}`);
+        console.log(`${colors.dim}${'─'.repeat(6)} ${'─'.repeat(25)} ${'─'.repeat(15)} ${'─'.repeat(12)} ${'─'.repeat(12)}${colors.reset}`);
+        indices.forEach(index => {
+            // Use the actual field names from API response
+            const id = (index.ID || 'N/A').toString().padEnd(6);
+            const name = (index.NAME || 'N/A').substring(0, 24).padEnd(25);
+            const ticker = (index.TICKER || 'N/A').substring(0, 14).padEnd(15);
+            // Format 24H change with color
+            const change24h = index['24H'] !== undefined ?
+                (index['24H'] >= 0 ?
+                    `${colors.green}+${index['24H'].toFixed(2)}%${colors.reset}` :
+                    `${colors.red}${index['24H'].toFixed(2)}%${colors.reset}`).padEnd(20) : 'N/A'.padEnd(12);
+            // Format 1M change with color
+            const change1m = index['1M'] !== undefined ?
+                (index['1M'] >= 0 ?
+                    `${colors.green}+${index['1M'].toFixed(2)}%${colors.reset}` :
+                    `${colors.red}${index['1M'].toFixed(2)}%${colors.reset}`).padEnd(20) : 'N/A'.padEnd(12);
+            console.log(`${colors.white}${id} ${colors.yellow}${name} ${colors.blue}${ticker} ${change24h} ${change1m}${colors.reset}`);
+        });
+        console.log(`\n${colors.cyan}${'═'.repeat(70)}${colors.reset}`);
+        console.log(`${colors.green}✅ Total indices available: ${indices.length}${colors.reset}`);
+        console.log(`${colors.dim}💡 Use "index holdings" or "index performance" for detailed analysis${colors.reset}`);
+        console.log();
+    }
+    formatIndicesHoldingsResponse(holdings, indexId) {
+        console.log(`${colors.magenta}${colors.bright}🏦 Index ${indexId} Holdings Breakdown [${new Date().toLocaleTimeString()}]${colors.reset}`);
+        console.log(`${colors.magenta}${'═'.repeat(70)}${colors.reset}`);
+        console.log(`${colors.dim}📊 Portfolio Composition & Asset Weights${colors.reset}\n`);
+        if (!holdings || holdings.length === 0) {
+            console.log(`${colors.yellow}No holdings data available for index ${indexId}.${colors.reset}`);
+            return;
+        }
+        console.log(`${colors.green}Found ${holdings.length} holdings in index ${indexId}:${colors.reset}\n`);
+        // Table header
+        console.log(`${colors.bright}${'Symbol'.padEnd(12)} ${'Name'.padEnd(20)} ${'Weight'.padEnd(10)} ${'Price'.padEnd(15)} ${'ROI'.padEnd(12)}${colors.reset}`);
+        console.log(`${colors.dim}${'─'.repeat(12)} ${'─'.repeat(20)} ${'─'.repeat(10)} ${'─'.repeat(15)} ${'─'.repeat(12)}${colors.reset}`);
+        let totalWeight = 0;
+        holdings.forEach(holding => {
+            // Use the actual field names from API response
+            const symbol = (holding.TOKEN_SYMBOL || 'N/A').padEnd(12);
+            const name = (holding.TOKEN_NAME || 'N/A').substring(0, 19).padEnd(20);
+            // Format weight
+            const weightValue = holding.WEIGHT;
+            const weight = weightValue ? `${(weightValue * 100).toFixed(2)}%` : 'N/A';
+            const weightPadded = weight.padEnd(10);
+            // Format price
+            const priceValue = holding.PRICE || 0;
+            const price = this.formatPrice(priceValue).padEnd(15);
+            // Format ROI with color
+            const roiValue = holding.CURRENT_ROI;
+            const roi = roiValue !== undefined ?
+                (roiValue >= 0 ?
+                    `${colors.green}+${roiValue.toFixed(2)}%${colors.reset}` :
+                    `${colors.red}${roiValue.toFixed(2)}%${colors.reset}`).padEnd(20) : 'N/A'.padEnd(12);
+            if (weightValue)
+                totalWeight += weightValue;
+            console.log(`${colors.yellow}${symbol} ${colors.green}${name} ${colors.white}${weightPadded} ${colors.cyan}${price} ${roi}${colors.reset}`);
+        });
+        console.log(`\n${colors.cyan}${'═'.repeat(70)}${colors.reset}`);
+        console.log(`${colors.green}✅ Total holdings: ${holdings.length}${colors.reset}`);
+        console.log(`${colors.green}✅ Total weight: ${(totalWeight * 100).toFixed(2)}%${colors.reset}`);
+        console.log(`${colors.dim}💡 Use "index performance" to see historical returns${colors.reset}`);
+        console.log();
+    }
+    formatIndicesPerformanceResponse(performance, indexId) {
+        console.log(`${colors.blue}${colors.bright}📈 Index ${indexId} Performance Analysis [${new Date().toLocaleTimeString()}]${colors.reset}`);
+        console.log(`${colors.blue}${'═'.repeat(70)}${colors.reset}`);
+        console.log(`${colors.dim}📊 Historical ROI & Investment Returns${colors.reset}\n`);
+        if (!performance || performance.length === 0) {
+            console.log(`${colors.yellow}No performance data available for index ${indexId}.${colors.reset}`);
+            return;
+        }
+        console.log(`${colors.green}Found ${performance.length} performance data points:${colors.reset}\n`);
+        // Calculate performance metrics
+        const firstPoint = performance[0];
+        const lastPoint = performance[performance.length - 1];
+        // Use the actual field names from API response
+        const firstROI = firstPoint.INDEX_CUMULATIVE_ROI;
+        const lastROI = lastPoint.INDEX_CUMULATIVE_ROI;
+        const totalReturn = lastROI && firstROI ?
+            ((lastROI - firstROI) / Math.abs(firstROI) * 100) : 0;
+        // Use the actual field names for date
+        const firstDate = firstPoint.DATE;
+        const lastDate = lastPoint.DATE;
+        // Summary metrics
+        console.log(`${colors.bright}Performance Summary:${colors.reset}`);
+        console.log(`${colors.white}• Period: ${firstDate || 'N/A'} to ${lastDate || 'N/A'}${colors.reset}`);
+        console.log(`${colors.white}• Total Return: ${totalReturn >= 0 ?
+            `${colors.green}+${totalReturn.toFixed(2)}%${colors.reset}` :
+            `${colors.red}${totalReturn.toFixed(2)}%${colors.reset}`}${colors.reset}`);
+        console.log(`${colors.white}• Data Points: ${performance.length}${colors.reset}\n`);
+        // Table header for recent performance
+        console.log(`${colors.bright}Recent Performance (Last 10 points):${colors.reset}`);
+        console.log(`${colors.bright}${'Date'.padEnd(12)} ${'ROI'.padEnd(15)} ${'Change'.padEnd(12)} ${'Trend'.padEnd(8)}${colors.reset}`);
+        console.log(`${colors.dim}${'─'.repeat(12)} ${'─'.repeat(15)} ${'─'.repeat(12)} ${'─'.repeat(8)}${colors.reset}`);
+        // Show last 10 data points
+        const recentData = performance.slice(-10);
+        recentData.forEach((point, index) => {
+            // Use the actual field names from API response
+            const dateValue = point.DATE;
+            const date = dateValue ? dateValue.toString().substring(0, 10).padEnd(12) : 'N/A'.padEnd(12);
+            // Use the actual field name for ROI
+            const roiValue = point.INDEX_CUMULATIVE_ROI;
+            const roi = roiValue ? `${roiValue.toFixed(4)}%` : 'N/A';
+            const roiPadded = roi.padEnd(15);
+            let change = 'N/A';
+            let trend = '';
+            if (index > 0 && roiValue && recentData[index - 1].INDEX_CUMULATIVE_ROI) {
+                const prevROI = recentData[index - 1].INDEX_CUMULATIVE_ROI;
+                const changeValue = roiValue - prevROI;
+                change = changeValue >= 0 ?
+                    `${colors.green}+${changeValue.toFixed(4)}%${colors.reset}` :
+                    `${colors.red}${changeValue.toFixed(4)}%${colors.reset}`;
+                trend = changeValue >= 0 ? `${colors.green}↗${colors.reset}` : `${colors.red}↘${colors.reset}`;
+            }
+            const changePadded = change.padEnd(20);
+            console.log(`${colors.white}${date} ${colors.cyan}${roiPadded} ${changePadded} ${trend}${colors.reset}`);
+        });
+        console.log(`\n${colors.cyan}${'═'.repeat(70)}${colors.reset}`);
+        console.log(`${colors.green}✅ Performance tracking period: ${performance.length} data points${colors.reset}`);
+        console.log(`${colors.dim}💡 Use "index holdings" to see current portfolio composition${colors.reset}`);
+        console.log();
+    }
+    async getHourlyTradingSignals(prompt) {
+        try {
+            // Extract token IDs from the user's prompt - default to Bitcoin if none specified
+            const tokenIds = await this.extractTokensFromPrompt(prompt || "Bitcoin"); // Use actual prompt or default to Bitcoin
+            const primaryTokenId = tokenIds[0] || "3375"; // Default to Bitcoin ID
+            console.log(`${colors.dim}  🎯 Getting hourly trading signals for token ID: ${primaryTokenId}${colors.reset}`);
+            const result = await this.retryWithBackoff(async () => {
+                return await this.plugin.getHourlyTradingSignals.executable({
+                    token_id: primaryTokenId,
+                    limit: "10",
+                    page: "1"
+                }, (msg) => console.log(`${colors.dim}  📝 ${msg}${colors.reset}`));
+            });
+            if (result.status === 'done') {
+                // Parse the hourly trading signals data from the response
+                try {
+                    const responseMatch = result.feedback.match(/Response: ({.*})/);
+                    if (responseMatch) {
+                        const responseData = JSON.parse(responseMatch[1]);
+                        if (responseData.success && responseData.data && responseData.data.length > 0) {
+                            this.formatHourlyTradingSignalsResponse(responseData.data);
+                        }
+                        else {
+                            this.formatResponse("No hourly trading signals data available at the moment.", 'data');
+                        }
+                    }
+                    else {
+                        this.formatResponse("Hourly trading signals retrieved successfully. Check the detailed data above for AI-generated buy/sell recommendations.", 'data');
+                    }
+                }
+                catch (parseError) {
+                    this.formatResponse("Hourly trading signals retrieved successfully. Check the detailed data above for AI-generated buy/sell recommendations.", 'data');
+                }
+            }
+            else {
+                this.formatResponse(result.feedback, 'error');
+            }
+        }
+        catch (error) {
+            this.formatResponse(`Hourly trading signals failed: ${error}`, 'error');
+        }
+    }
+    formatHourlyTradingSignalsResponse(signals) {
+        console.log(`${colors.magenta}${colors.bright}⏰ Hourly AI Trading Signals [${new Date().toLocaleTimeString()}]${colors.reset}`);
+        console.log(`${colors.magenta}${'═'.repeat(75)}${colors.reset}`);
+        console.log(`${colors.dim}🤖 Real-time AI Trading Signals Updated Hourly${colors.reset}\n`);
+        signals.slice(0, 8).forEach((signal, index) => {
+            const tokenName = signal.TOKEN_NAME || 'Unknown Token';
+            const tokenSymbol = signal.TOKEN_SYMBOL || 'N/A';
+            const tradingSignal = parseInt(signal.SIGNAL) || 0;
+            const position = parseInt(signal.POSITION) || 0;
+            const closePrice = signal.CLOSE || 0;
+            const timestamp = signal.TIMESTAMP || new Date().toISOString();
+            // Determine signal type and styling based on SIGNAL field.
+            let signalType = 'HOLD';
+            let signalColor = colors.yellow;
+            let signalEmoji = '🟡';
+            let actionEmoji = '⏸️';
+            if (tradingSignal === 1) {
+                signalType = 'BUY';
+                signalColor = colors.green;
+                signalEmoji = '🟢';
+                actionEmoji = '📈';
+            }
+            else if (tradingSignal === -1) {
+                signalType = 'SELL';
+                signalColor = colors.red;
+                signalEmoji = '🔴';
+                actionEmoji = '📉';
+            }
+            // Position interpretation
+            let positionText = 'NEUTRAL';
+            let positionColor = colors.yellow;
+            if (position === 1) {
+                positionText = 'LONG';
+                positionColor = colors.green;
+            }
+            else if (position === -1) {
+                positionText = 'SHORT';
+                positionColor = colors.red;
+            }
+            console.log(`${colors.bright}${index + 1}. ${tokenName} (${tokenSymbol})${colors.reset}`);
+            console.log(`${signalColor}${signalEmoji} ${actionEmoji} ${signalType} SIGNAL${colors.reset}`);
+            console.log(`📍 Position: ${positionColor}${positionText}${colors.reset}`);
+            console.log(`💰 Close Price: $${this.formatPrice(closePrice)}`);
+            console.log(`⏰ Time: ${new Date(timestamp).toLocaleString()}\n`);
+        });
+        // Summary statistics
+        const buySignals = signals.filter(s => parseInt(s.SIGNAL) === 1).length;
+        const sellSignals = signals.filter(s => parseInt(s.SIGNAL) === -1).length;
+        const holdSignals = signals.filter(s => parseInt(s.SIGNAL) === 0).length;
+        const longPositions = signals.filter(s => parseInt(s.POSITION) === 1).length;
+        const shortPositions = signals.filter(s => parseInt(s.POSITION) === -1).length;
+        const neutralPositions = signals.filter(s => parseInt(s.POSITION) === 0).length;
+        console.log(`${colors.dim}${'─'.repeat(75)}${colors.reset}`);
+        console.log(`${colors.bright}📊 Signal Summary:${colors.reset}`);
+        console.log(`${colors.green}📈 BUY: ${buySignals}${colors.reset} | ${colors.red}📉 SELL: ${sellSignals}${colors.reset} | ${colors.yellow}⏸️  HOLD: ${holdSignals}${colors.reset}`);
+        console.log(`${colors.bright}📍 Position Summary:${colors.reset}`);
+        console.log(`${colors.green}📈 LONG: ${longPositions}${colors.reset} | ${colors.red}📉 SHORT: ${shortPositions}${colors.reset} | ${colors.yellow}⚖️  NEUTRAL: ${neutralPositions}${colors.reset}`);
+        console.log(`${colors.dim}💡 Showing ${Math.min(8, signals.length)} signals. Total available: ${signals.length}${colors.reset}`);
+        console.log(`${colors.dim}⏰ Signals are updated hourly with real-time market data${colors.reset}`);
+        console.log();
+    }
+    getSignalStrengthBar(strength) {
+        const maxStrength = 1.0;
+        const normalizedStrength = Math.min(strength / maxStrength, 1);
+        const barLength = 20;
+        const filledLength = Math.round(normalizedStrength * barLength);
+        let color = colors.yellow;
+        if (normalizedStrength >= 0.7)
+            color = colors.green;
+        else if (normalizedStrength >= 0.4)
+            color = colors.yellow;
+        else
+            color = colors.red;
+        const filled = '█'.repeat(filledLength);
+        const empty = '░'.repeat(barLength - filledLength);
+        return `${color}${filled}${colors.dim}${empty}${colors.reset}`;
+    }
+    getConfidenceBar(confidence) {
+        const barLength = 15;
+        const filledLength = Math.round(confidence * barLength);
+        let color = colors.red;
+        if (confidence >= 0.8)
+            color = colors.green;
+        else if (confidence >= 0.6)
+            color = colors.yellow;
+        else if (confidence >= 0.4)
+            color = colors.yellow;
+        const filled = '█'.repeat(filledLength);
+        const empty = '░'.repeat(barLength - filledLength);
+        return `${color}${filled}${colors.dim}${empty}${colors.reset}`;
+    }
 }
-// Validate environment before starting
 function validateEnvironment() {
     if (!process.env.TOKENMETRICS_API_KEY) {
         console.log(`${colors.red}❌ TOKENMETRICS_API_KEY is missing in .env file${colors.reset}`);

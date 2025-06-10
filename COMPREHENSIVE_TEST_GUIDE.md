@@ -1,4 +1,4 @@
-# Comprehensive TokenMetrics Plugin Test Guide
+# Comprehensive Token Metrics Plugin Test Guide
 
 ## 🧪 **Complete Endpoint Testing - All 17 Endpoints**
 
@@ -99,7 +99,7 @@ npm run example:trading-signals
 
 ### **🚀 New Advanced Endpoints (Chat Interface + Direct)**
 
-#### **14. TokenMetrics AI Chat** (`getTokenMetricsAi`)
+#### **14. Token Metrics AI Chat** (`getTokenMetricsAi`)
 ```bash
 npm run example:tokenmetrics-ai
 ```

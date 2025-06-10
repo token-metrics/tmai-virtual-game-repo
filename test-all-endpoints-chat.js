@@ -3,7 +3,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 
-// All 17 TokenMetrics endpoints with specific test prompts
+// All 17 Token Metrics endpoints with specific test prompts
 const endpointTests = [
   {
     name: "1. Tokens Database",
@@ -71,8 +71,8 @@ const endpointTests = [
     expectedKeywords: ["resistance", "support", "level", "price"]
   },
   {
-    name: "14. TokenMetrics AI",
-    prompt: "Ask TokenMetrics AI about the best cryptocurrency investments",
+    name: "14. Token Metrics AI",
+    prompt: "Ask Token Metrics AI about the best cryptocurrency investments",
     expectedKeywords: ["AI", "investment", "recommendation", "analysis"]
   },
   {
@@ -207,7 +207,7 @@ function generateReport() {
   
   if (passed === testResults.length) {
     console.log('\n🎉 ALL TESTS PASSED! 🎉');
-    console.log('✅ TokenMetrics chat interface is fully operational');
+    console.log('✅ Token Metrics chat interface is fully operational');
     console.log('✅ All 17 endpoints are working correctly');
     console.log('✅ Beautiful formatting is applied to all responses');
   } else {

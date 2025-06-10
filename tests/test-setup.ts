@@ -127,7 +127,12 @@ if (require.main === module) {
     console.log(`• npm run test:all - Run all tests`);
     console.log(`• npm run demo:trading-bot - Demo trading bot scenario`);
     console.log(`• npm run demo:research-agent - Demo research agent scenario`);
-    console.log(`• npm run demo:new-endpoints - Demo new endpoints (AI, Sentiments, Scenario Analysis, Correlation)\n`);
+    console.log(`• npm run demo:new-endpoints - Demo new endpoints (AI, Sentiments, Scenario Analysis, Correlation)`);
+    console.log(`• npm run demo:indices - Demo crypto indices endpoints (Indices, Holdings, Performance)`);
+    console.log(`${colors.blue}📊 Individual Examples:${colors.reset}`);
+    console.log(`• npm run example:indices - Crypto indices overview`);
+    console.log(`• npm run example:indices-holdings - Index portfolio composition`);
+    console.log(`• npm run example:indices-performance - Historical index performance\n`);
     process.exit(0);
   } else {
     process.exit(1);

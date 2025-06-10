@@ -196,7 +196,7 @@ function analyzePrompt(prompt) {
   }
 }
 
-console.log('🧪 COMPREHENSIVE ROUTING TEST - All 17 TokenMetrics Endpoints\n');
+console.log('🧪 COMPREHENSIVE ROUTING TEST - All 17 Token Metrics Endpoints\n');
 
 let passed = 0;
 let failed = 0;

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the TokenMetrics Virtuals Plugin will be documented in this file.
+All notable changes to the Token Metrics Virtuals Plugin will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 - ✨ Complete integration with Virtuals Protocol GAME framework
-- 🔌 17 TokenMetrics API endpoints as AI-callable functions
+- 🔌 17 Token Metrics API endpoints as AI-callable functions
 - 🤖 Full GameAgent compatibility with natural language processing
 - 📊 Comprehensive cryptocurrency analysis capabilities
 - 💬 Interactive chat interface for testing and exploration
@@ -79,5 +79,5 @@ When contributing to this project, please:
 
 ## Version History
 
-- **v1.0.0** - Initial release with 17 TokenMetrics endpoints
+- **v1.0.0** - Initial release with 17 Token Metrics endpoints
 - **Future versions** - See [Unreleased] section above 

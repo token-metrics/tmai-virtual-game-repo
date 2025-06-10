@@ -93,6 +93,185 @@ function formatPriceResponse(priceData) {
     output += `\n${colors.cyan}${'═'.repeat(60)}${colors.reset}\n`;
     return output;
 }
+// Format indices response
+function formatIndicesResponse(indices) {
+    if (!indices || indices.length === 0) {
+        return `${colors.yellow}No indices found.${colors.reset}`;
+    }
+    let output = `${colors.cyan}${colors.bright}📊 TokenMetrics Crypto Indices${colors.reset}\n`;
+    output += `${colors.cyan}${'═'.repeat(70)}${colors.reset}\n\n`;
+    output += `${colors.green}Found ${indices.length} crypto indices:${colors.reset}\n\n`;
+    // Table header
+    output += `${colors.bright}${'ID'.padEnd(6)} ${'Name'.padEnd(25)} ${'Ticker'.padEnd(15)} ${'24H Change'.padEnd(12)} ${'1M Change'.padEnd(12)}${colors.reset}\n`;
+    output += `${colors.dim}${'─'.repeat(6)} ${'─'.repeat(25)} ${'─'.repeat(15)} ${'─'.repeat(12)} ${'─'.repeat(12)}${colors.reset}\n`;
+    indices.forEach(index => {
+        // Use the actual field names from API response
+        const id = (index.ID || 'N/A').toString().padEnd(6);
+        const name = (index.NAME || 'N/A').substring(0, 24).padEnd(25);
+        const ticker = (index.TICKER || 'N/A').substring(0, 14).padEnd(15);
+        // Format 24H change with color
+        const change24h = index['24H'] !== undefined ?
+            (index['24H'] >= 0 ?
+                `${colors.green}+${index['24H'].toFixed(2)}%${colors.reset}` :
+                `${colors.red}${index['24H'].toFixed(2)}%${colors.reset}`).padEnd(20) : 'N/A'.padEnd(12);
+        // Format 1M change with color
+        const change1m = index['1M'] !== undefined ?
+            (index['1M'] >= 0 ?
+                `${colors.green}+${index['1M'].toFixed(2)}%${colors.reset}` :
+                `${colors.red}${index['1M'].toFixed(2)}%${colors.reset}`).padEnd(20) : 'N/A'.padEnd(12);
+        output += `${colors.white}${id} ${colors.yellow}${name} ${colors.blue}${ticker} ${change24h} ${change1m}${colors.reset}\n`;
+    });
+    output += `\n${colors.cyan}${'═'.repeat(70)}${colors.reset}\n`;
+    output += `${colors.green}✅ Total indices available: ${formatNumber(indices.length)}${colors.reset}\n`;
+    return output;
+}
+// Format indices holdings response
+function formatIndicesHoldingsResponse(holdings) {
+    if (!holdings || holdings.length === 0) {
+        return `${colors.yellow}No holdings found for this index.${colors.reset}`;
+    }
+    let output = `${colors.cyan}${colors.bright}🏦 Index Holdings Breakdown${colors.reset}\n`;
+    output += `${colors.cyan}${'═'.repeat(70)}${colors.reset}\n\n`;
+    output += `${colors.green}Found ${holdings.length} holdings in this index:${colors.reset}\n\n`;
+    // Table header
+    output += `${colors.bright}${'Symbol'.padEnd(12)} ${'Name'.padEnd(20)} ${'Weight'.padEnd(10)} ${'Price'.padEnd(15)} ${'Value'.padEnd(12)}${colors.reset}\n`;
+    output += `${colors.dim}${'─'.repeat(12)} ${'─'.repeat(20)} ${'─'.repeat(10)} ${'─'.repeat(15)} ${'─'.repeat(12)}${colors.reset}\n`;
+    let totalWeight = 0;
+    holdings.forEach(holding => {
+        // Use the actual field names from API response
+        const symbol = (holding.TOKEN_SYMBOL || 'N/A').padEnd(12);
+        const name = (holding.TOKEN_NAME || 'N/A').substring(0, 19).padEnd(20);
+        // Format weight
+        const weightValue = holding.WEIGHT;
+        const weight = weightValue ? `${(weightValue * 100).toFixed(2)}%` : 'N/A';
+        const weightPadded = weight.padEnd(10);
+        // Format price
+        const priceValue = holding.PRICE || 0;
+        const price = formatPrice(priceValue).padEnd(15);
+        // Format value (calculated from weight and price if needed)
+        const valueValue = holding.VALUE || (weightValue && priceValue ? weightValue * priceValue : null);
+        const value = valueValue ? formatPrice(valueValue) : 'N/A';
+        const valuePadded = value.padEnd(12);
+        if (weightValue)
+            totalWeight += weightValue;
+        output += `${colors.yellow}${symbol} ${colors.green}${name} ${colors.white}${weightPadded} ${colors.cyan}${price} ${colors.magenta}${valuePadded}${colors.reset}\n`;
+    });
+    output += `\n${colors.cyan}${'═'.repeat(70)}${colors.reset}\n`;
+    output += `${colors.green}✅ Total holdings: ${formatNumber(holdings.length)}${colors.reset}\n`;
+    output += `${colors.green}✅ Total weight: ${(totalWeight * 100).toFixed(2)}%${colors.reset}\n`;
+    return output;
+}
+// Format indices performance response
+function formatIndicesPerformanceResponse(performance) {
+    if (!performance || performance.length === 0) {
+        return `${colors.yellow}No performance data found for this index.${colors.reset}`;
+    }
+    let output = `${colors.cyan}${colors.bright}📈 Index Performance Analysis${colors.reset}\n`;
+    output += `${colors.cyan}${'═'.repeat(70)}${colors.reset}\n\n`;
+    output += `${colors.green}Found ${performance.length} performance data points:${colors.reset}\n\n`;
+    // Calculate performance metrics
+    const firstPoint = performance[0];
+    const lastPoint = performance[performance.length - 1];
+    // Use the actual field names from API response
+    const firstROI = firstPoint.INDEX_CUMULATIVE_ROI;
+    const lastROI = lastPoint.INDEX_CUMULATIVE_ROI;
+    const totalReturn = lastROI && firstROI ?
+        ((lastROI - firstROI) / Math.abs(firstROI) * 100) : 0;
+    // Use the actual field names for date
+    const firstDate = firstPoint.DATE;
+    const lastDate = lastPoint.DATE;
+    // Summary metrics
+    output += `${colors.bright}Performance Summary:${colors.reset}\n`;
+    output += `${colors.white}• Period: ${firstDate || 'N/A'} to ${lastDate || 'N/A'}${colors.reset}\n`;
+    output += `${colors.white}• Total Return: ${totalReturn >= 0 ?
+        `${colors.green}+${totalReturn.toFixed(2)}%${colors.reset}` :
+        `${colors.red}${totalReturn.toFixed(2)}%${colors.reset}`}${colors.reset}\n`;
+    output += `${colors.white}• Data Points: ${performance.length}${colors.reset}\n\n`;
+    // Table header for recent performance
+    output += `${colors.bright}Recent Performance (Last 10 points):${colors.reset}\n`;
+    output += `${colors.bright}${'Date'.padEnd(12)} ${'ROI'.padEnd(15)} ${'Change'.padEnd(12)} ${'Trend'.padEnd(8)}${colors.reset}\n`;
+    output += `${colors.dim}${'─'.repeat(12)} ${'─'.repeat(15)} ${'─'.repeat(12)} ${'─'.repeat(8)}${colors.reset}\n`;
+    // Show last 10 data points
+    const recentData = performance.slice(-10);
+    recentData.forEach((point, index) => {
+        // Use the actual field names from API response
+        const dateValue = point.DATE;
+        const date = dateValue ? dateValue.toString().substring(0, 10).padEnd(12) : 'N/A'.padEnd(12);
+        // Use the actual field name for ROI
+        const roiValue = point.INDEX_CUMULATIVE_ROI;
+        const roi = roiValue ? `${roiValue.toFixed(4)}%` : 'N/A';
+        const roiPadded = roi.padEnd(15);
+        let change = 'N/A';
+        let trend = '';
+        if (index > 0 && roiValue && recentData[index - 1].INDEX_CUMULATIVE_ROI) {
+            const prevROI = recentData[index - 1].INDEX_CUMULATIVE_ROI;
+            const changeValue = roiValue - prevROI;
+            change = changeValue >= 0 ?
+                `${colors.green}+${changeValue.toFixed(4)}%${colors.reset}` :
+                `${colors.red}${changeValue.toFixed(4)}%${colors.reset}`;
+            trend = changeValue >= 0 ? `${colors.green}↗${colors.reset}` : `${colors.red}↘${colors.reset}`;
+        }
+        const changePadded = change.padEnd(20);
+        output += `${colors.white}${date} ${colors.cyan}${roiPadded} ${changePadded} ${trend}${colors.reset}\n`;
+    });
+    output += `\n${colors.cyan}${'═'.repeat(70)}${colors.reset}\n`;
+    output += `${colors.green}✅ Performance tracking period: ${performance.length} data points${colors.reset}\n`;
+    return output;
+}
+// Format hourly trading signals response
+function formatHourlyTradingSignalsResponse(signals) {
+    if (!signals || signals.length === 0) {
+        return `${colors.yellow}No hourly trading signals found.${colors.reset}`;
+    }
+    let output = `${colors.magenta}${colors.bright}⏰ Hourly AI Trading Signals${colors.reset}\n`;
+    output += `${colors.magenta}${'═'.repeat(75)}${colors.reset}\n\n`;
+    output += `${colors.green}Found ${signals.length} hourly trading signals:${colors.reset}\n\n`;
+    // Table header
+    output += `${colors.bright}${'Symbol'.padEnd(12)} ${'Name'.padEnd(20)} ${'Signal'.padEnd(8)} ${'Strength'.padEnd(12)} ${'Confidence'.padEnd(12)} ${'Price'.padEnd(15)}${colors.reset}\n`;
+    output += `${colors.dim}${'─'.repeat(12)} ${'─'.repeat(20)} ${'─'.repeat(8)} ${'─'.repeat(12)} ${'─'.repeat(12)} ${'─'.repeat(15)}${colors.reset}\n`;
+    signals.slice(0, 10).forEach(signal => {
+        const symbol = (signal.TOKEN_SYMBOL || 'N/A').padEnd(12);
+        const name = (signal.TOKEN_NAME || 'N/A').substring(0, 19).padEnd(20);
+        // Format signal
+        const tradingSignal = signal.TRADING_SIGNAL || 0;
+        let signalText = 'HOLD';
+        let signalColor = colors.yellow;
+        if (tradingSignal === 1) {
+            signalText = 'BUY';
+            signalColor = colors.green;
+        }
+        else if (tradingSignal === -1) {
+            signalText = 'SELL';
+            signalColor = colors.red;
+        }
+        const signalPadded = signalText.padEnd(8);
+        // Format strength
+        const strength = signal.SIGNAL_STRENGTH || 0;
+        const strengthText = Math.abs(strength).toFixed(2);
+        const strengthPadded = strengthText.padEnd(12);
+        // Format confidence
+        const confidence = signal.CONFIDENCE || 0;
+        const confidenceText = `${(confidence * 100).toFixed(1)}%`;
+        const confidencePadded = confidenceText.padEnd(12);
+        // Format price
+        const price = formatPrice(signal.CURRENT_PRICE || 0).padEnd(15);
+        output += `${colors.yellow}${symbol} ${colors.green}${name} ${signalColor}${signalPadded}${colors.reset} ${colors.white}${strengthPadded} ${colors.cyan}${confidencePadded} ${colors.white}${price}${colors.reset}\n`;
+    });
+    if (signals.length > 10) {
+        output += `\n${colors.dim}... and ${signals.length - 10} more signals${colors.reset}\n`;
+    }
+    // Summary statistics
+    const buySignals = signals.filter(s => s.TRADING_SIGNAL === 1).length;
+    const sellSignals = signals.filter(s => s.TRADING_SIGNAL === -1).length;
+    const holdSignals = signals.filter(s => s.TRADING_SIGNAL === 0).length;
+    const avgConfidence = signals.reduce((sum, s) => sum + (s.CONFIDENCE || 0), 0) / signals.length;
+    output += `\n${colors.magenta}${'═'.repeat(75)}${colors.reset}\n`;
+    output += `${colors.bright}📊 Signal Summary:${colors.reset}\n`;
+    output += `${colors.green}📈 BUY: ${buySignals}${colors.reset} | ${colors.red}📉 SELL: ${sellSignals}${colors.reset} | ${colors.yellow}⏸️  HOLD: ${holdSignals}${colors.reset}\n`;
+    output += `${colors.bright}🎯 Average Confidence: ${(avgConfidence * 100).toFixed(1)}%${colors.reset}\n`;
+    output += `${colors.dim}⏰ Signals are updated hourly with real-time market data${colors.reset}\n`;
+    return output;
+}
 // Enhanced API call function with better formatting
 async function tokenMetricsApiCall(apiKey, baseApiUrl, endpoint, args, logger) {
     // Prepare headers for the request
@@ -129,6 +308,18 @@ async function tokenMetricsApiCall(apiKey, baseApiUrl, endpoint, args, logger) {
     }
     else if (endpoint === '/price' && jsonResponse.data) {
         formattedMessage = formatPriceResponse(jsonResponse.data);
+    }
+    else if (endpoint === '/indices' && jsonResponse.data) {
+        formattedMessage = formatIndicesResponse(jsonResponse.data);
+    }
+    else if (endpoint === '/indices-holdings' && jsonResponse.data) {
+        formattedMessage = formatIndicesHoldingsResponse(jsonResponse.data);
+    }
+    else if (endpoint === '/indices-performance' && jsonResponse.data) {
+        formattedMessage = formatIndicesPerformanceResponse(jsonResponse.data);
+    }
+    else if (endpoint === '/hourly-trading-signals' && jsonResponse.data) {
+        formattedMessage = formatHourlyTradingSignalsResponse(jsonResponse.data);
     }
     else {
         // Default formatting for other endpoints
