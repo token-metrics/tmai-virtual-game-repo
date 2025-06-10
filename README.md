@@ -549,57 +549,34 @@ If you're still having issues:
 ### **📸 Screenshots & Visual Demonstrations**
 
 #### **🚀 Plugin Installation & Setup**
-Screenshot 2025-06-11 at 00.57.43.png
+*Visual demonstration of successful plugin installation and initial setup process*
+
+![Plugin Installation Setup - Step 1](screenshots/Setup-1.png)
+> **Initial Setup**: Shows the plugin installation process, dependency setup, and environment configuration.
+
+![Plugin Installation Setup - Step 2](screenshots/Setup-2.png)
+> **Setup Verification**: Complete setup verification showing successful build, test execution, and plugin readiness confirmation.
 
 #### **💬 Interactive Chat Interface**
+*Screenshots of the interactive terminal chat interface in action*
 
-Screenshot 2025-06-11 at 01.06.04.png
+![Interactive Chat Interface - Main](screenshots/Chat-1.png)
+> **Chat Interface**: The main Token Metrics AI chat interface showing the welcome screen, available commands, and user interaction prompts.
 
-Screenshot 2025-06-11 at 01.00.09.png
+![Interactive Chat Interface - Responses](screenshots/Chat-2.png)
+> **AI Responses**: Example of comprehensive AI responses with color-coded output, data visualization, and detailed analysis results from Token Metrics API.
 
-#### **📊 Crypto Market Sentiment**
+#### **📊 Crypto Market Sentiment Analysis**
+*Visual examples of sentiment analysis output and market data visualization*
 
-Screenshot 2025-06-11 at 00.58.50.png
+![Market Sentiment Analysis](screenshots/Market%20Sentiment%20Example.png)
+> **Sentiment Dashboard**: Real-time market sentiment analysis with color-coded indicators, sentiment scores, confidence levels, and comprehensive market mood visualization.
 
-Screenshot 2025-06-11 at 00.59.48.png
+#### **🏦 Quantitative Metrics Analysis**
+*Advanced quantitative analysis visualization and performance metrics*
 
-#### **🏦 QUANTITATIVE METRICS ANALYSIS**
-
-Screenshot 2025-06-11 at 01.09.40.png
-
-
-#### **🔧 Setup Verification**
-```bash
-$ npm run test:setup
-
-🔍 Testing Token Metrics Plugin Setup...
-═══════════════════════════════════════
-
-✅ Environment Check:
-   • Node.js version: v18.17.0 ✓
-   • npm version: 9.6.7 ✓
-   • TypeScript: 5.0.4 ✓
-
-✅ API Configuration:
-   • TOKENMETRICS_API_KEY: tm-****-****-**** ✓
-   • GAME_API_KEY: ****-****-**** ✓
-
-✅ Function Registration:
-   • All 21 functions registered ✓
-   
-🚀 Plugin is ready for use!
-```
-
-#### **🤖 GameAgent Integration**
-```bash
-$ npm run example:full-agent
-
-🤖 Initializing Crypto Analysis Agent...
-✅ Agent Ready! All 21 functions available.
-
-💬 User: "Show me Bitcoin analysis"
-🔍 Processing... ✅ Complete!
-```
+![Quantitative Metrics Dashboard](screenshots/Quantmetics%20Example.png)
+> **Quant Analysis**: Advanced quantitative metrics including Sharpe ratios, volatility analysis, drawdown calculations, risk-adjusted returns with visual progress bars, and color-coded performance indicators.
 
 ### **🧪 Testing Steps**
 
